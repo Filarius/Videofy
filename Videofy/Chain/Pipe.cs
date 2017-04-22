@@ -68,30 +68,32 @@ namespace Videofy.Chain
 
             while (queue.Count < size)
             {
-                try
+                if (data.IsCompleted & (data.Count == 0)) // no data in buffer pipe, append zeros to tail
                 {
-                    temp = data.Take(token);
-                }
-                catch (InvalidOperationException e)
-                {
-                    if (!((token.IsCancellationRequested) | (data.IsCompleted)) )
-                    {
-                        throw e;
-                    }
-                    // pipe is finalized, append zeros to tail 
-                    
-
                     int cnt = queue.Count;
                     //Array.Resize<byte>(ref buff, size);
-                    for(int i = cnt; i < size; i++)
+                    for (int i = cnt; i < size; i++)
                     {
                         queue.Enqueue(0);
+                    }                   
+                }
+                else
+                {
+                    try
+                    {
+                        temp = data.Take(token);
                     }
-                    temp = null;           
+                    catch (InvalidOperationException e)
+                    {
+                        if (!((token.IsCancellationRequested) | (data.IsCompleted)))
+                        {
+                            throw e;
+                        }
+                    }
                 }
 
                 if(temp!=null)
-                {
+                {                    
                     for(int i = 0; i < temp.Length; i++)
                     {
                         queue.Enqueue(temp[i]);

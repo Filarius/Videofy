@@ -42,12 +42,12 @@ namespace Videofy.Chain
             node = new NodeBitsToBlock(opt, pipeout, pipein);
             nodes.Add(node);
             pipeout = pipein;
-
+            
             pipein = new Pipe(_tokenSource.Token);
             node = new NodeBlocksToFrame(opt, pipeout, pipein);
             nodes.Add(node);
             pipeout = pipein;
-
+            
             pipein = new Pipe(_tokenSource.Token);
             node = new NodeDebugRawStorage(pipeout, null);
             nodes.Add(node);

@@ -103,8 +103,10 @@ namespace Videofy.Chain.Types
 
         public byte[] GetBlockArray()
         {
-            throw new NotImplementedException();
-
+            DFFrameBlock block = GetBlock();
+            byte[] temp = block.ToArray();
+            block.Free();
+            return temp;
         }
 
         public void FromArray(byte[] array)

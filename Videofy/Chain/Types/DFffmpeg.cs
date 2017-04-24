@@ -26,7 +26,8 @@ namespace Videofy.Chain.Types
         private int _charBlock = 1024000 / sizeof(char);
         private int _byteBlock = 1024000;
 
-        public DFffmpeg(string Path, string args)
+        //public DFffmpeg(string Path,string args)
+        public DFffmpeg(string args)
         {
             IgnoreInput = false;
 
@@ -40,7 +41,7 @@ namespace Videofy.Chain.Types
             _writeQueue = new BlockingCollection<byte[]>(2);
             _errorQueue = new BlockingCollection<byte[]>(2);
 
-            _procInfo = new ProcessStartInfo(Path, args);
+            _procInfo = new ProcessStartInfo("Utils/ffmpeg.exe", args);
             _procInfo.CreateNoWindow = true;
             _procInfo.UseShellExecute = false;
             _procInfo.RedirectStandardError = true;
@@ -54,11 +55,12 @@ namespace Videofy.Chain.Types
             _isRun = false;
         }
 
+        /*
         public DFffmpeg(string Path, OptionsStruct opt)
         {
 
         }
-
+        */
 
         ~DFffmpeg()
         {
@@ -73,7 +75,14 @@ namespace Videofy.Chain.Types
 
             _isRun = true;
             _proc.Start();
-            _proc.PriorityClass = ProcessPriorityClass.BelowNormal;
+            try
+            {
+                _proc.PriorityClass = ProcessPriorityClass.BelowNormal;
+            }
+            catch 
+            {
+            }
+            
 
             // seems best low CPU solution to check if process if alive 
             // and wrapper need to do cleanup
@@ -275,7 +284,7 @@ namespace Videofy.Chain.Types
                 {
                     byte[] buf = inputQueue.Take(_cancelToken.Token);
                     output.Write(buf, 0, buf.Length);
-                    output.Flush();
+                  //  output.Flush();
                 }
                 catch (Exception e)
                 {
@@ -315,11 +324,21 @@ namespace Videofy.Chain.Types
         {
             try
             {
-                return queue.Take(_cancelToken.Token);
+                byte[] temp = null;
+                if(queue.TryTake(out temp))
+                {
+                    return temp;
+                }
+                else
+                {
+                    return null;
+                }
+
+                //return queue.TryTake(_cancelToken.Token);
             }
             catch (Exception e)
             {
-                Console.WriteLine("Read " + e.ToString());
+                Console.WriteLine("ARRAY ERROR " + e.ToString());
                 return null;
             }
 

@@ -33,6 +33,35 @@ namespace Videofy.Main
     static partial class ExtensionMethods
 
     {
+        public static string ToName(this PixelFormat pixFmt)
+        {
+
+            switch (pixFmt)
+            {
+                case PixelFormat.Gray: return "gray";
+                case PixelFormat.RGB24: return "rgb24";
+                case PixelFormat.YUV420P:
+                    return "yuv420p";
+                case PixelFormat.YUV444P:
+                    return "yuv444p";
+            }
+            throw new System.ArgumentOutOfRangeException();
+        }
+
+        public static PixelFormat FromName(this PixelFormat pxlFmt, string pxlFmtString)
+        {
+            switch (pxlFmtString)
+            {
+                case "gray": return PixelFormat.Gray;
+                case "rgb24": return PixelFormat.RGB24;
+                case "yuv420p":
+                    return PixelFormat.YUV420P;
+                case "yuv444p":
+                    return PixelFormat.YUV444P;
+            }
+            throw new System.ArgumentOutOfRangeException();
+        }
+
         public static string ToFriendlyName(this PixelFormat pxlFmt)
         {
             switch (pxlFmt)

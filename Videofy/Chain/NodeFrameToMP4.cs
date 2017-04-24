@@ -1,0 +1,92 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Videofy.Chain.Types;
+using Videofy.Main;
+namespace Videofy.Chain
+{
+    
+    class NodeFrameToMP4:ChainNode
+    {
+        private  DFffmpeg ffmpeg;
+        private OptionsStruct opt;
+        private int frameSize;
+        public NodeFrameToMP4(String path,OptionsStruct opt, Pipe Input):base(Input,null)
+        {
+            this.opt = opt;
+            ffmpeg = new DFffmpeg(GenerateArgs(path, opt));
+            InitFrameSize();
+        }
+
+        private String GenerateArgs(String path, OptionsStruct opt)
+        {
+            string result =
+                "-y -f rawvideo -vcodec rawvideo "
+                + "-s "
+                    + ((int)opt.resolution * 16 / 9).ToString()
+                    + "x"
+                    + ((int)opt.resolution).ToString()
+                    + " "
+                + "-pix_fmt "
+                    + opt.pxlFmtIn.ToName()
+                    + " "
+                + "-r 24 " //fps
+                + "-i - "
+                + "-pix_fmt "
+                    + opt.pxlFmtOut.ToName()
+                    + " "
+                + "-c:v libx264 ";
+            if (opt.isEncodingCRF)
+            {
+                result += "-crf ";
+            }                 
+            else
+            {
+                result += "-b:v ";
+            }    
+            result += 
+                opt.videoQuality.ToString() 
+                   + " "
+                + "-preset "
+                    + opt.encodingPreset.ToString()
+                    + " "
+                + "-an "
+                + "\"" 
+                    + path
+                    +"\"";
+            return result;                 
+        }
+
+        private void InitFrameSize()
+        {
+            DFFrame frame = new DFFrame(opt);
+            frameSize = frame.Size;
+            frame.Free();
+        }
+
+        public override void Start()
+        {
+            ffmpeg.StarByte();
+            while(Input.IsOpen|(Input.Count>0))
+            {
+                byte[] temp = Input.Take(frameSize);
+                ffmpeg.Write(temp);
+                String s;
+                while ((s = ffmpeg.ErrorString()) != "")
+                {
+                   // Console.WriteLine(s);
+                }
+                while ((s = ffmpeg.ReadString()) != "")
+                {
+                  //  Console.WriteLine(s);
+                }
+                
+            }
+            ffmpeg.Stop();
+        }
+
+
+    }
+}

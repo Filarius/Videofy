@@ -10,11 +10,25 @@ namespace Videofy.Main
     struct OptionsStruct
     {
         public ResolutionsEnum resolution;
-        public Byte density;
-        public Byte bpc; // bits per cell
+        public Byte density; // bits per cell                           
         public Byte cellCount; // number of cells for DCT
+        public int videoQuality; //video encoding quality
+        public bool isEncodingCRF; //define if quality must be CRF based or Bitrate
+        public EncodingPreset encodingPreset;
         public PixelFormat pxlFmtIn;
         public PixelFormat pxlFmtOut;
+
+        public OptionsStruct(params Object[] args)
+        {
+            resolution = ResolutionsEnum.p720;
+            density = 1;
+            cellCount = 1;
+            videoQuality = 25;
+            isEncodingCRF = true;
+            encodingPreset = EncodingPreset.medium;
+            pxlFmtIn = PixelFormat.YUV420P;
+            pxlFmtOut = PixelFormat.YUV444P;
+        }
     }
 
     class OptionsManager

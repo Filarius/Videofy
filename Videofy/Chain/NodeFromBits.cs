@@ -29,7 +29,7 @@ namespace Videofy.Chain
                 if (q > 939200)
                     if (q % 100 == 0)
                     {
-                        Console.WriteLine(q);
+             //           Console.WriteLine(q);
                     }
                 q++;
                 //DEBUG

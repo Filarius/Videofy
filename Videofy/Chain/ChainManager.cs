@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using Videofy.Main;
+using Videofy.Chain.Helpers;
 
 namespace Videofy.Chain
 {
@@ -19,9 +20,9 @@ namespace Videofy.Chain
 
         public void EncodeFile(string path)
         {
-            OptionsStruct opt = new OptionsStruct();
+            OptionsStruct opt = new OptionsStruct(0);
             opt.cellCount = 1;
-            opt.density = 4;
+            opt.density = 1;
             opt.pxlFmtIn = PixelFormat.YUV420P;
             opt.pxlFmtOut = PixelFormat.YUV420P;
             opt.resolution = ResolutionsEnum.p720;
@@ -49,7 +50,8 @@ namespace Videofy.Chain
             pipeout = pipein;
             
             pipein = new Pipe(_tokenSource.Token);
-            node = new NodeDebugRawStorage(pipeout, null);
+            node = new NodeFrameToMP4("out.mp4", opt, pipeout);
+            //node = new NodeDebugRawStorage(pipeout, null);
             nodes.Add(node);
 
             Parallel.ForEach(nodes, (n) => n.Start());
@@ -75,6 +77,11 @@ namespace Videofy.Chain
 
         public void DecodeFile(string path)
         {
+
+            var a = new MP4Info("out.mp4");
+            int q = a.GetWidth();
+
+
             OptionsStruct opt = new OptionsStruct();
             opt.cellCount = 1;
             opt.density = 4;
@@ -88,6 +95,11 @@ namespace Videofy.Chain
             node = new NodeDebugRawStorage(null,pipein);
             nodes.Add(node);
             Pipe pipeout = pipein;
+
+            pipein = new Pipe(_tokenSource.Token);
+            node = new NodeBlocksFromFrame(opt, pipeout, pipein);
+            nodes.Add(node);
+            pipeout = pipein;
 
             pipein = new Pipe(_tokenSource.Token);
             node = new NodeBitsFromBlock(opt, pipeout, pipein);

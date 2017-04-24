@@ -289,7 +289,7 @@ namespace Videofy.Chain
                     //DEBUG
                     if(cnt>1878540)
                     if (cnt % 1 ==0)
-                        Console.WriteLine(cnt);
+                  //      Console.WriteLine(cnt);
                     cnt+=1;
                     //DEBUG
                     PlainTransformBitsToBlock();
@@ -318,7 +318,7 @@ namespace Videofy.Chain
                     if (i > 1878546)
                         if (i % 1 == 0)
                         {
-                            Console.WriteLine(i);
+                 //           Console.WriteLine(i);
                         }
                     i++;
                     //DEBUG

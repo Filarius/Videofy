@@ -139,12 +139,15 @@
     <Compile Include="Chain\ChainNodeFunc.cs" />
     <Compile Include="Chain\ChainNode.cs" />
     <Compile Include="Chain\Debug.cs" />
+    <Compile Include="Chain\Helpers\MP4Info.cs" />
     <Compile Include="Chain\NodeBitsFromBlocks.cs" />
     <Compile Include="Chain\NodeBitsToBlock.cs" />
     <Compile Include="Chain\NodeBlockBase.cs" />
     <Compile Include="Chain\NodeBlocksFromFrame.cs" />
     <Compile Include="Chain\NodeBlocksToFrame.cs" />
     <Compile Include="Chain\NodeDebugRawStorage.cs" />
+    <Compile Include="Chain\NodeFrameFromMP4.cs" />
+    <Compile Include="Chain\NodeFrameToMP4.cs" />
     <Compile Include="Chain\NodeFromBits.cs" />
     <Compile Include="Chain\NodeReader.cs" />
     <Compile Include="Chain\NodeToBits.cs" />
@@ -158,6 +161,7 @@
     <Compile Include="Chain\Types\DFFrame.cs" />
     <Compile Include="Chain\Types\DFFrameBlock.cs" />
     <Compile Include="Chain\Types\DFFrameSub.cs" />
+    <Compile Include="EncodingPreset.cs" />
     <Compile Include="FileHeader.cs" />
     <Compile Include="Form2.cs">
       <SubType>Form</SubType>
@@ -240,6 +244,7 @@
       <FileType>File</FileType>
     </PublishFile>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

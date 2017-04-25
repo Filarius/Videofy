@@ -15,6 +15,13 @@ namespace Videofy.Chain
         //private byte[] buff = null;
         private int pos;
         private CancellationToken token;
+        public CancellationToken Token
+        {
+            get
+            { return token; }
+            set
+            { token = value; }
+        }
 
         public Pipe(CancellationToken token)
         {

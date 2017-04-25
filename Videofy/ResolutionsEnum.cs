@@ -27,7 +27,7 @@ namespace Videofy.Main
             return ((int)res).ToString();            
         }
 
-        public static PixelFormat FromFriendlyName(string pxlFmtString)
+        public static PixelFormat FromFriendlyName(this ResolutionsEnum res,string pxlFmtString)
         {
             switch (pxlFmtString)
             {

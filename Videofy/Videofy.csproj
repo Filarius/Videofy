@@ -139,6 +139,7 @@
     <Compile Include="Chain\ChainNodeFunc.cs" />
     <Compile Include="Chain\ChainNode.cs" />
     <Compile Include="Chain\Debug.cs" />
+    <Compile Include="Chain\Helpers\DataHeader.cs" />
     <Compile Include="Chain\Helpers\MP4Info.cs" />
     <Compile Include="Chain\NodeBitsFromBlocks.cs" />
     <Compile Include="Chain\NodeBitsToBlock.cs" />
@@ -149,6 +150,7 @@
     <Compile Include="Chain\NodeFrameFromMP4.cs" />
     <Compile Include="Chain\NodeFrameToMP4.cs" />
     <Compile Include="Chain\NodeFromBits.cs" />
+    <Compile Include="Chain\NodeMetaHeaderToBlocks.cs" />
     <Compile Include="Chain\NodeReader.cs" />
     <Compile Include="Chain\NodeToBits.cs" />
     <Compile Include="Chain\NodeWriter.cs" />

@@ -75,6 +75,7 @@ namespace Videofy.Chain.Types
 
             _isRun = true;
             _proc.Start();
+            /*
             try
             {
                 _proc.PriorityClass = ProcessPriorityClass.BelowNormal;
@@ -82,7 +83,7 @@ namespace Videofy.Chain.Types
             catch 
             {
             }
-            
+            */
 
             // seems best low CPU solution to check if process if alive 
             // and wrapper need to do cleanup

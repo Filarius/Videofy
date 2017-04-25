@@ -13,12 +13,11 @@ namespace Videofy.Chain
         private  DFffmpeg ffmpeg;
         private OptionsStruct opt;
         private int frameSize;
-        public NodeFrameFromMP4(String path,OptionsStruct opt, Pipe Input):base(Input,null)
+        public NodeFrameFromMP4(String path,OptionsStruct opt, Pipe Output):base(null,Output)
         {
             this.opt = opt;
             InitFrameSize();
-            ffmpeg = new DFffmpeg(GenerateArgs(path, opt));
-            
+            ffmpeg = new DFffmpeg(GenerateArgs(path, opt));            
         }
 
         private String GenerateArgs(String path, OptionsStruct opt)
@@ -46,20 +45,34 @@ namespace Videofy.Chain
         public override void Start()
         {
             ffmpeg.StarByte();
-            while(Input.IsOpen|(Input.Count>0))
+            String s;
+            byte[] temp;
+            while (true)
             {
-                byte[] temp = Input.Take(frameSize);
-                ffmpeg.Write(temp);
-                String s;
-                while ((s = ffmpeg.ErrorString()) != "")
+                while ((ffmpeg.ErrorString()) != "")
                 {
-                   // Console.WriteLine(s);
-                }
-                while ((s = ffmpeg.ReadString()) != "")
-                {
-                  //  Console.WriteLine(s);
+                    // Console.WriteLine(s);
                 }                
+
+                if (ffmpeg.IsRunning)
+                {
+                    temp = ffmpeg.Read();
+                    if (temp == null)
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    temp = ffmpeg.Read();
+                    if (temp == null)
+                    {
+                        break;
+                    }
+                }
+                Output.Add(temp);
             }
+            Output.Complete();
             ffmpeg.Stop();
         }
 

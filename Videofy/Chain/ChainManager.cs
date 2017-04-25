@@ -78,21 +78,25 @@ namespace Videofy.Chain
         public void DecodeFile(string path)
         {
 
-            var a = new MP4Info("out.mp4");
-            int q = a.GetWidth();
+
+            int width = (new MP4Info("out.mp4")).GetWidth();
 
 
             OptionsStruct opt = new OptionsStruct();
             opt.cellCount = 1;
-            opt.density = 4;
+            opt.density = 1;
             opt.pxlFmtIn = PixelFormat.YUV420P;
             opt.pxlFmtOut = PixelFormat.YUV420P;
-            opt.resolution = ResolutionsEnum.p720;
+            opt.resolution = (ResolutionsEnum)width;
 
             List<ChainNode> nodes = new List<ChainNode>();
+
             Pipe pipein = new Pipe(_tokenSource.Token);
             ChainNode node;
+            /*
             node = new NodeDebugRawStorage(null,pipein);
+            */
+            node = new NodeFrameFromMP4("out.mp4", opt, pipein);
             nodes.Add(node);
             Pipe pipeout = pipein;
 

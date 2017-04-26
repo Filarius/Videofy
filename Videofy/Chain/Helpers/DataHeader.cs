@@ -11,19 +11,26 @@ namespace Videofy.Chain.Helpers
 {
     static class DataHeader
     {
-        static readonly public int Length = 6;
+        static private int headLength = 8;
 
-        static public byte[] Generate(string path,OptionsStruct opt)
+        static public void ToPipe(string path, OptionsStruct opt, Pipe pipeOut)
         {
             int size = 0;
             var fi = new FileInfo(path);
-            long fileSize = fi.Length;
-            string name = Path.GetFileName(path);
-            size += sizeof(long);
+            long fileSize = fi.Length;            
+            size += sizeof(long); //4
             //opt.density
             size += 1;
             //opt.cellCount
             size += 1;
+            //fileName length
+            string name = Path.GetFileName(path);
+            byte[] nameArray = System.Text.UTF8Encoding.UTF8.GetBytes(name);
+            int nameSize = nameArray.Length;
+            if (nameSize >= 256 * 256)
+                throw new ArgumentOutOfRangeException("File name length");
+            size += 2;
+            size += nameSize;
             byte[] result = new byte[size];
             int i = 0;
             while(i<4)
@@ -35,25 +42,43 @@ namespace Videofy.Chain.Helpers
             result[i] = opt.density;
             i++;
             result[i] = opt.cellCount;
-            return result;            
+            i++;
+            result[i] = (byte)(nameSize % 256);
+            nameSize /= 256;
+            i++;
+            result[i] = (byte)(nameSize % 256);
+            i++;
+            for(int j = 0; j < nameSize; j++)
+            {
+                result[i + j] = nameArray[j];
+            }
+            pipeOut.Add(result);
         }
 
-        static public void Extract(byte[] header,ref OptionsStruct opt,ref long fileSize)
+        static public void FromPipe(ref OptionsStruct opt, 
+                                    ref String fileName,
+                                    ref int fileSize,
+                                    Pipe pipeIn)
         {
-            if (header.Length != Length) throw new ArgumentOutOfRangeException();
-            long size = 0;
-            int i = Length - 1;
-            opt.cellCount = header[i];
-            i--;
-            opt.density = header[i];
-            i--;
-            while(i>0)
+            byte[] head = pipeIn.Take(headLength);
+            fileSize = 0;
+            int i = 3;
+            while (i >= 0)
             {
-                size += header[i];
-                size = size * 256;
+                fileSize = fileSize * 256;
+                fileSize += head[i];                
                 i--;
             }
-            fileSize = size;
+            i = 4;
+            opt.density = head[i];
+            i++;
+            opt.cellCount = head[i];
+            i++;
+            int nameSize = head[i]*256 + head[i+1];
+
+            byte[] nameArray = pipeIn.Take(nameSize);
+
+            fileName = System.Text.UTF8Encoding.UTF8.GetString(nameArray);
         }
 
 

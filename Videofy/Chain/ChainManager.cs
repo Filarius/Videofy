@@ -27,6 +27,37 @@ namespace Videofy.Chain
             opt.pxlFmtOut = PixelFormat.YUV420P;
             opt.resolution = ResolutionsEnum.p720;
 
+            OptionsStruct headopt = opt;
+            headopt.density = 1;
+            headopt.cellCount = 1;
+
+
+
+
+            Pipe pipein;
+            Pipe pipeout;
+            ChainNode node;
+            List<ChainNode> solidChain = new List<ChainNode>();
+            pipeout = new Pipe(_tokenSource.Token);
+            node = new NodeFrameToMP4("out.mp4", opt, pipeout);
+            pipein = pipeout;
+            solidChain.Insert(0, node);
+
+            pipeout = new Pipe(_tokenSource.Token);
+            node = new NodeBlocksToFrame(opt, pipeout, pipein);
+            pipein = pipeout;
+            solidChain.Insert(0, node);
+
+            Parallel.ForEach(solidChain, (n) => n.Start());
+
+            Pipe pipeintemp;
+            Pipe pipeouttemp;
+            List<ChainNode> headerChain = new List<ChainNode>();
+
+
+            DataHeader.ToPipe(path, headopt, pipein);
+
+            /*
             List<ChainNode> nodes = new List<ChainNode>();
             Pipe pipein = new Pipe(_tokenSource.Token);
             ChainNode node;
@@ -55,7 +86,7 @@ namespace Videofy.Chain
             nodes.Add(node);
 
             Parallel.ForEach(nodes, (n) => n.Start());
-
+            */
             /*
             List<Action> actions = new List<Action>();
             ChainNode node;
@@ -71,8 +102,8 @@ namespace Videofy.Chain
 
             Parallel.ForEach(actions, (a) => a.Invoke());
             */
-            
-            
+
+
         }
 
         public void DecodeFile(string path)

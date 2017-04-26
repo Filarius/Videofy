@@ -15,7 +15,7 @@ namespace Videofy.Chain
         private int[] valueBounds;
         private int[,] snakeIteratorCore;
 
-        public NodeBlockBase(OptionsStruct options, Pipe input, Pipe output) : base(input, output)
+        public NodeBlockBase(OptionsStruct options, IPipe input, IPipe output) : base(input, output)
         {
             this.options = options;
             valueBounds = new int[2];

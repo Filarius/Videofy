@@ -13,7 +13,7 @@ namespace Videofy.Chain
         private DFFrame Frame;
         private OptionsStruct opts;
 
-        public NodeBlocksToFrame(OptionsStruct opts, Pipe input, Pipe output) : base(input, output)
+        public NodeBlocksToFrame(OptionsStruct opts, IPipe input, IPipe output) : base(input, output)
         {
             this.opts = opts;            
         }

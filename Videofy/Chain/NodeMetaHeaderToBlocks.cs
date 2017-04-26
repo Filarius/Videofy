@@ -13,13 +13,13 @@ namespace Videofy.Chain
     class NodeMetaHeaderToBlocks:ChainNode
     {
         private OptionsStruct opt;
-        private
+        
 
         public OptionsStruct Options { get { return opt; } }
-        public Pipe PipeOut { get { return Input; } }
+        public IPipe PipeOut { get { return Input; } }
 
         
-        public NodeMetaHeaderToBlocks(string path,OptionsStruct opt, Pipe output):base(null,output)
+        public NodeMetaHeaderToBlocks(string path,OptionsStruct opt, IPipe output):base(null,output)
         {
             this.opt = opt;              
 

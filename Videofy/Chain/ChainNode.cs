@@ -12,14 +12,13 @@ namespace Videofy.Chain
     {
         protected const int blockSize = 1024000;
 
-        private Pipe _input, _output;
+        private IPipe _input, _output;
         private int _chunkSize;
         private Task _task;
         private NodeFunc _func;
 
-        public Pipe Input
-        {
-            
+        public IPipe Input
+        {            
             get
             {
                 return _input;
@@ -28,7 +27,7 @@ namespace Videofy.Chain
             set { _input = value; }
         }
 
-        public Pipe Output
+        public IPipe Output
         {
             get
             {
@@ -38,7 +37,7 @@ namespace Videofy.Chain
             set { _output = value; }
         }
 
-        public ChainNode(Pipe input, /*int size,*/ Pipe output/*, NodeFunc func*/)
+        public ChainNode(IPipe input, /*int size,*/ IPipe output/*, NodeFunc func*/)
         {
             _input = input;
             _output = output;

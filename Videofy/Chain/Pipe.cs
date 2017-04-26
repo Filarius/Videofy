@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Videofy.Chain
 {
-    class Pipe
+    class Pipe:IPipe
     {
         private BlockingCollection<byte[]> data;
         private Queue<byte> queue;

@@ -12,7 +12,7 @@ namespace Videofy.Chain
         private FileStream reader;
         
 
-        public NodeReader(string path,Pipe output) : base(null,output/*,null*/)
+        public NodeReader(string path,IPipe output) : base(null,output/*,null*/)
         {
             if (!File.Exists(path)) throw new Exception("File does not exists: " + path);            
             reader = new FileStream(path,FileMode.Open);            

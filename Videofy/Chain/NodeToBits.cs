@@ -9,7 +9,7 @@ namespace Videofy.Chain
     class NodeToBits : ChainNode
     {
 
-        public NodeToBits(Pipe input, Pipe output) : base(input, output)
+        public NodeToBits(IPipe input, IPipe output) : base(input, output)
         {
 
         }

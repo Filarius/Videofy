@@ -13,7 +13,7 @@ namespace Videofy.Chain
         private  DFffmpeg ffmpeg;
         private OptionsStruct opt;
         private int frameSize;
-        public NodeFrameFromMP4(String path,OptionsStruct opt, Pipe Output):base(null,Output)
+        public NodeFrameFromMP4(String path,OptionsStruct opt, IPipe Output):base(null,Output)
         {
             this.opt = opt;
             InitFrameSize();

@@ -11,7 +11,7 @@ namespace Videofy.Chain
     {
         private FileStream file;
 
-        public NodeDebugRawStorage(Pipe input,Pipe output):base(input,output)
+        public NodeDebugRawStorage(IPipe input,IPipe output):base(input,output)
         {
             if(input!= null)
             {

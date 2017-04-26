@@ -12,7 +12,7 @@ namespace Videofy.Chain
         private FileStream writer;
         
 
-        public NodeWriter(string path, Pipe input) : base(input,null)
+        public NodeWriter(string path, IPipe input) : base(input,null)
         {
             //if (!File.Exists(path)) throw new Exception("File does not exists: " + path);
             writer = new FileStream(path, FileMode.Create);

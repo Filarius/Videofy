@@ -10,7 +10,7 @@ namespace Videofy.Chain
     class NodeBitsFromBlock : NodeBlockBase
     {
 
-        public NodeBitsFromBlock(OptionsStruct opt, Pipe input, Pipe output) : base(opt, input, output)
+        public NodeBitsFromBlock(OptionsStruct opt, IPipe input, IPipe output) : base(opt, input, output)
         {
 
         }

@@ -37,25 +37,44 @@ namespace Videofy.Chain
             Pipe pipein;
             Pipe pipeout;
             ChainNode node;
-            List<ChainNode> solidChain = new List<ChainNode>();
+            List<ChainNode> chain = new List<ChainNode>();
             pipeout = new Pipe(_tokenSource.Token);
             node = new NodeFrameToMP4("out.mp4", opt, pipeout);
             pipein = pipeout;
-            solidChain.Insert(0, node);
+            chain.Add(node);           
 
+            //Parallel.ForEach(chain, (n) => n.Start());
+
+            Pipe pipeheader = new Pipe(_tokenSource.Token); 
+            Pipe pipebody = new Pipe(_tokenSource.Token);
+            List<Pipe> pipeList = new List<Pipe>();
+            pipeList.Add(pipeheader);
+            pipeList.Add(pipebody);
+            IPipe pipeJoiner = new PipeJoiner(_tokenSource.Token, pipeList);
+
+            node = new NodeBlocksToFrame(opt, pipeJoiner, pipein);
+            chain.Add(node);
+
+            //HEADER CHAIN
+            pipein = pipeheader;
             pipeout = new Pipe(_tokenSource.Token);
-            node = new NodeBlocksToFrame(opt, pipeout, pipein);
+            node = new NodeBitsToBlock(headopt, pipeout, pipein);
+            chain.Add(node);
+
             pipein = pipeout;
-            solidChain.Insert(0, node);
+            pipeout = new Pipe(_tokenSource.Token);
+            node = new NodeToBits(pipeout, pipein);
+            chain.Add(node);
 
-            Parallel.ForEach(solidChain, (n) => n.Start());
-
-            Pipe pipeintemp;
-            Pipe pipeouttemp;
-            List<ChainNode> headerChain = new List<ChainNode>();
-
-
+            pipein = pipeout;
             DataHeader.ToPipe(path, headopt, pipein);
+
+            //BODY CHAIN
+
+            pipein = pipebody;
+            pipeout = new Pipe(_tokenSource.Token);
+            node = new NodeBitsToBlock(opt, pipeout, pipein);
+            
 
             /*
             List<ChainNode> nodes = new List<ChainNode>();

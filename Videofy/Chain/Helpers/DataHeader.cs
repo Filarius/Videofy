@@ -53,6 +53,7 @@ namespace Videofy.Chain.Helpers
                 result[i + j] = nameArray[j];
             }
             pipeOut.Add(result);
+            pipeOut.Complete();
         }
 
         static public void FromPipe(ref OptionsStruct opt, 

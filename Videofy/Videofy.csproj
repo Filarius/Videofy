@@ -156,7 +156,7 @@
     <Compile Include="Chain\NodeToBits.cs" />
     <Compile Include="Chain\NodeWriter.cs" />
     <Compile Include="Chain\Pipe.cs" />
-    <Compile Include="Chain\PipeQueue.cs" />
+    <Compile Include="Chain\PipeJoiner.cs" />
     <Compile Include="Checks.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="ConverterState.cs" />

@@ -29,79 +29,7 @@ namespace Videofy.Chain
 
             OptionsStruct headopt = opt;
             headopt.density = 1;
-            headopt.cellCount = 1;
-
-
-
-            /*
-            Pipe pipein;
-            Pipe pipeout;
-            ChainNode node;
-            List<ChainNode> chain = new List<ChainNode>();
-            pipeout = new Pipe(_tokenSource.Token);
-            node = new NodeFrameToMP4("out.mkv", opt, pipeout);
-            pipein = pipeout;
-            chain.Add(node);
-            */
-            //Parallel.ForEach(chain, (n) => n.Start());
-
-            /*
-            Pipe pipeheader = new Pipe(_tokenSource.Token); 
-            Pipe pipebody = new Pipe(_tokenSource.Token);
-            List<Pipe> pipeList = new List<Pipe>();
-            pipeList.Add(pipeheader);
-            pipeList.Add(pipebody);
-            IPipe pipeJoiner = new PipeJoiner(_tokenSource.Token, pipeList);
-            */
-
-            //node = new NodeBlocksToFrame(opt, pipeJoiner, pipein);
-            /*
-            pipeout = new Pipe(_tokenSource.Token);
-            node = new NodeBlocksToFrame(opt, pipeout, pipein);
-            chain.Add(node);
-            */
-
-            //HEADER CHAIN
-            /*
-            pipein = pipeheader;
-            pipeout = new Pipe(_tokenSource.Token);
-            node = new NodeBitsToBlock(headopt, pipeout, pipein);
-            chain.Add(node);
-
-            pipein = pipeout;
-            pipeout = new Pipe(_tokenSource.Token);
-            node = new NodeToBits(pipeout, pipein);
-            chain.Add(node);
-
-            pipein = pipeout;
-            DataHeader.ToPipe(path, headopt, pipein);
-            */
-            //BODY CHAIN
-
-            //pipein = pipebody;
-            /*
-            pipein = pipeout;
-            pipeout = new Pipe(_tokenSource.Token);
-            node = new NodeBitsToBlock(opt, pipeout, pipein);
-            chain.Add(node);
-
-            pipein = pipeout;
-            pipeout = new Pipe(_tokenSource.Token);
-            node = new NodeToBits(pipeout, pipein);
-            chain.Add(node);
-
-            pipein = pipeout;
-            //pipeout = new Pipe(_tokenSource.Token);
-            node = new NodeReader(path, pipein);
-            chain.Add(node);
-
-            Parallel.ForEach(chain, (n) => n.Start());
-            */
-
-
-
-
-
+            headopt.cellCount = 1;            
 
             List<ChainNode> nodes = new List<ChainNode>();
             Pipe pipein = new Pipe(_tokenSource.Token);
@@ -151,61 +79,22 @@ namespace Videofy.Chain
             nodes.Add(node);
 
             Parallel.ForEach(nodes, (n) => n.Start());
-
-
-
-
-
-
-
-
-
-            /*
-            List<ChainNode> nodes = new List<ChainNode>();
-            Pipe pipein = new Pipe(_tokenSource.Token);
-            ChainNode node;
-            node = new NodeReader(path, pipein);
-            nodes.Add(node);
-            Pipe pipeout = pipein;
-            
-            pipein = new Pipe(_tokenSource.Token);
-            node = new NodeToBits(pipeout, pipein);
-            nodes.Add(node);
-            pipeout = pipein;
-            
-            pipein = new Pipe(_tokenSource.Token);            
-            node = new NodeBitsToBlock(opt, pipeout, pipein);
-            nodes.Add(node);
-            pipeout = pipein;
-            
-            pipein = new Pipe(_tokenSource.Token);
-            node = new NodeBlocksToFrame(opt, pipeout, pipein);
-            nodes.Add(node);
-            pipeout = pipein;
-            
-            pipein = new Pipe(_tokenSource.Token);
-            node = new NodeFrameToMP4("out.mp4", opt, pipeout);
-            //node = new NodeDebugRawStorage(pipeout, null);
-            nodes.Add(node);
-
-            Parallel.ForEach(nodes, (n) => n.Start());
-          */
-
         }
 
         public void DecodeFile(string path)
         {
-
-
             int width = (new MP4Info("out.mp4")).GetWidth();
 
-
-            OptionsStruct opt = new OptionsStruct();
+            OptionsStruct opt = new OptionsStruct(0);
             opt.cellCount = 1;
             opt.density = 1;
             opt.pxlFmtIn = PixelFormat.YUV420P;
             opt.pxlFmtOut = PixelFormat.YUV420P;
             opt.resolution = (ResolutionsEnum)width;
+
+            OptionsStruct headopt = opt;
+            opt.cellCount = 1;
+            opt.density = 1;
 
             List<ChainNode> nodes = new List<ChainNode>();
 
@@ -222,6 +111,15 @@ namespace Videofy.Chain
             node = new NodeBlocksFromFrame(opt, pipeout, pipein);
             nodes.Add(node);
             pipeout = pipein;
+
+            //HEADER START
+            /*
+            pipein = new Pipe(_tokenSource.Token);
+            node = new NodeBitsFromBlock(opt, pipeout, pipein);
+            nodes.Add(node);
+            pipeout = pipein;
+            */
+            //HEADER END
 
             pipein = new Pipe(_tokenSource.Token);
             node = new NodeBitsFromBlock(opt, pipeout, pipein);

@@ -47,7 +47,7 @@ namespace Videofy.Chain.Helpers
                 }
                 ffmpeg.Wait(100);
             }
-            ffmpeg.Stop();
+            ffmpeg.Terminate();
 
             int l = s.IndexOf("Stream #");
             l = s.IndexOf("yuv", l);

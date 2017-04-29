@@ -73,7 +73,7 @@ namespace Videofy.Chain
                 Output.Add(temp);
             }
             Output.Complete();
-            ffmpeg.Stop();
+            ffmpeg.Terminate();
         }
 
 

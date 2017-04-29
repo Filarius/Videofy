@@ -11,14 +11,14 @@ namespace Videofy.Chain.Helpers
 {
     static class DataHeader
     {
-        static private int headLength = 8;
+        static private int headLength = 12;
 
         static public void ToPipe(string path, OptionsStruct opt, Pipe pipeOut)
         {
             int size = 0;
             var fi = new FileInfo(path);
             long fileSize = fi.Length;            
-            size += sizeof(long); //4
+            size += sizeof(long); //8
             //opt.density
             size += 1;
             //opt.cellCount
@@ -33,7 +33,7 @@ namespace Videofy.Chain.Helpers
             size += nameSize;
             byte[] result = new byte[size];
             int i = 0;
-            while(i<4)
+            while(i<8)
             {
                 result[i] = (byte)(fileSize % 256);
                 fileSize = fileSize / 256;
@@ -43,10 +43,11 @@ namespace Videofy.Chain.Helpers
             i++;
             result[i] = opt.cellCount;
             i++;
-            result[i] = (byte)(nameSize % 256);
-            nameSize /= 256;
+            int temp = nameSize;
+            result[i] = (byte)(temp % 256);
+            temp /= 256;
             i++;
-            result[i] = (byte)(nameSize % 256);
+            result[i] = (byte)(temp % 256);
             i++;
             for(int j = 0; j < nameSize; j++)
             {

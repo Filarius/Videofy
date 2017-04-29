@@ -64,7 +64,7 @@ namespace Videofy.Chain.Types
 
         ~DFffmpeg()
         {
-            Stop();
+            Terminate();
         }
 
 
@@ -140,7 +140,17 @@ namespace Videofy.Chain.Types
             _terror.Start();
         }
 
-        public void Stop()
+        public void Hatiko()
+        {
+            try { _proc.StandardInput.BaseStream.Close(); } catch { }
+            while (_isRun)
+            {
+                Wait(1000);
+            }
+            Terminate();
+        }
+
+        public void Terminate()
         {
             (new Thread(() =>
             {

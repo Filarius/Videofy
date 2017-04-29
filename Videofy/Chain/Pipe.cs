@@ -27,12 +27,12 @@ namespace Videofy.Chain
         {
             this.token = token;
             data = new BlockingCollection<byte[]>(new ConcurrentQueue<byte[]>(), 5);
-            queue = new Queue<byte>();
+            queue = new Queue<byte>(102400);
             pos = 0;
             //buff = new byte[0];                        
         }
 
-        public int Count { get { return queue.Count; } private set { } }
+        public int Count { get { return queue.Count + data.Count; } private set { } }
 
         public void Complete()
         {

@@ -281,6 +281,10 @@ namespace Videofy.Chain
         {
             //DEBUG
             int cnt = 0;
+            if(options.density==1)
+            {
+                int a=89;
+            }
             //DEBUG
             if (options.cellCount == 1)
             {

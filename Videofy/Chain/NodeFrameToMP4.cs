@@ -76,15 +76,15 @@ namespace Videofy.Chain
                 String s;
                 while ((s = ffmpeg.ErrorString()) != "")
                 {
-                   // Console.WriteLine(s);
+                    Console.Write(s);
                 }
                 while ((s = ffmpeg.ReadString()) != "")
                 {
-                  //  Console.WriteLine(s);
+                    Console.Write(s);
                 }
                 
             }
-            ffmpeg.Stop();
+            ffmpeg.Hatiko();
         }
 
 

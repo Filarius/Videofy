@@ -34,6 +34,7 @@ namespace Videofy.Chain
                 Output.Add(temp);
                 
             }
+            reader.Close();
             Output.Complete();
         }
 

@@ -35,17 +35,18 @@ namespace Videofy.Chain.Helpers
             String temp;
             while (true)
             {
+                ffmpeg.Wait(100);
                 temp = ffmpeg.ErrorString();
                 if(temp != "")
                 {
                     s += temp;
                     continue;
                 }
-                else if(!ffmpeg.IsRunning)
+                else if((s.Length>0) & (!ffmpeg.IsRunning))
                 {
                     break;
                 }
-                ffmpeg.Wait(100);
+                
             }
             ffmpeg.Terminate();
 

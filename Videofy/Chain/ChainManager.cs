@@ -21,8 +21,11 @@ namespace Videofy.Chain
         public void EncodeFile(string path)
         {
             OptionsStruct opt = new OptionsStruct(0);
+            opt.encodingPreset = EncodingPreset.medium;
             opt.cellCount = 1;
-            opt.density = 1;
+            opt.density = 4;
+            opt.isEncodingCRF = false;
+            opt.videoQuality = 20000000;
             opt.pxlFmtIn = PixelFormat.YUV420P;
             opt.pxlFmtOut = PixelFormat.YUV420P;
             opt.resolution = ResolutionsEnum.p720;
@@ -50,7 +53,7 @@ namespace Videofy.Chain
 
             //HEADER START
             pipein = new Pipe(_tokenSource.Token);
-            DataHeader.ToPipe(path, headopt, pipein);
+            DataHeader.ToPipe(path, opt, pipein);
             pipeout = pipein;
             pipein = new Pipe(_tokenSource.Token);
             node = new NodeToBits(pipeout, pipein);
@@ -78,7 +81,11 @@ namespace Videofy.Chain
             //node = new NodeDebugRawStorage(pipeout, null);
             nodes.Add(node);
 
-            Parallel.ForEach(nodes, (n) => n.Start());
+            Task.Run(() =>
+                (Parallel.ForEach(nodes, (n) => n.Start()))
+             );
+
+            int f = 0;
         }
 
         public void DecodeFile(string path)
@@ -105,20 +112,25 @@ namespace Videofy.Chain
             */
             node = new NodeFrameFromMP4("out.mp4", opt, pipein);
             nodes.Add(node);
+            ChainNode n1 = node;
             Pipe pipeout = pipein;
 
             pipein = new Pipe(_tokenSource.Token);
             node = new NodeBlocksFromFrame(opt, pipeout, pipein);
+            ChainNode n2 = node;
             nodes.Add(node);
             pipeout = pipein;
 
+            // Task.Run(()=>Parallel.ForEach(nodes, (n) => n.Start()));
+            Task.Run(() => { n1.Start(); });
+            Task.Run(() => { n2.Start(); });
+
+            nodes = new List<ChainNode>();
             //HEADER START
-            /*
-            pipein = new Pipe(_tokenSource.Token);
-            node = new NodeBitsFromBlock(opt, pipeout, pipein);
-            nodes.Add(node);
-            pipeout = pipein;
-            */
+            string fileName = "";
+            long fileSize = 0;
+            DataHeader.FromPipe(ref opt, ref fileName, ref fileSize, pipeout);
+            fileName = System.IO.Path.GetDirectoryName(path) +@"\"+ fileName;
             //HEADER END
 
             pipein = new Pipe(_tokenSource.Token);
@@ -130,31 +142,15 @@ namespace Videofy.Chain
             node = new NodeFromBits(pipeout, pipein);
             nodes.Add(node);
             pipeout = pipein;
-
-
             
             pipein = new Pipe(_tokenSource.Token);
-            node = new NodeWriter(path, pipeout);
-            nodes.Add(node);      
-            
-                  
-
-            Parallel.ForEach(nodes, (n) => n.Start());
-            /*
-            List<Action> actions = new List<Action>();
-            ChainNode node;
-            Pipe pipe = new Pipe(_tokenSource.Token);
-
-            node = new NodeDebugRawStorage(null, pipe);
-            actions.Add(() => node.Start());
-            
-
-            node = new NodeWriter(path, pipe);
-            actions.Add(() => node.Start());
+            node = new NodeWriter(fileName, fileSize, pipeout);
+            nodes.Add(node);
 
 
-            Parallel.Invoke(actions.ToArray());  
-            */
+            Task.Run(() =>
+                Parallel.ForEach(nodes, (n) => n.Start())
+            );
 
         }
 

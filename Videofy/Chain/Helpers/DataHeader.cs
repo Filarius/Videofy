@@ -86,7 +86,7 @@ namespace Videofy.Chain.Helpers
                 }
                 double tmp = (sum / 64.0);
 
-                //covert cell value to byte sequence                               
+                //convert cell value to byte sequence                               
                 tmp /= 255;
                 byte result = (byte)Math.Round(tmp);
                 queue.Enqueue(result);
@@ -105,7 +105,7 @@ namespace Videofy.Chain.Helpers
                     if (k == headLength)
                     {
                         fileSize = 0;
-                        byte x;
+                        int x;
                         for (x = 7;x>=0;x--)
                         {
                             fileSize *= 256;
@@ -116,50 +116,25 @@ namespace Videofy.Chain.Helpers
                         x++;
                         opt.cellCount = header[x];
                         x++;
-                        nameSize = header[x+1]*256+header[x];
-
+                        nameSize = header[x+1]*256+header[x];                        
                         todo += nameSize;
-                    }                    
+                        Array.Resize<byte>(ref header, headLength + nameSize);
+                    }                                        
                 }
-
-
-                
             }
+            
+            byte[] name = new byte[nameSize];
+                        
+            Array.Copy(header, headLength, name, 0, nameSize);
 
-
-
-
-
-
-
-            /*
-            byte[] head = pipeIn.Take(headLength);
-            fileSize = 0;
-            int i = 3;
-            while (i >= 0)
-            {
-                fileSize = fileSize * 256;
-                fileSize += head[i];                
-                i--;
-            }
-            i = 4;
-            opt.density = head[i];
-            i++;
-            opt.cellCount = head[i];
-            i++;
-            int nameSize = head[i]*256 + head[i+1];
-
-            byte[] nameArray = pipeIn.Take(nameSize);
-
-            fileName = System.Text.UTF8Encoding.UTF8.GetString(nameArray);
-
-            */
+            fileName = System.Text.UTF8Encoding.UTF8.GetString(name);
+            
         }
 
 
 
 
-        
+
 
     }
 }

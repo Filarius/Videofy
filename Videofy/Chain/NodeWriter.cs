@@ -10,22 +10,33 @@ namespace Videofy.Chain
     class NodeWriter:ChainNode
     {
         private FileStream writer;
-        
+        private long size;
 
-        public NodeWriter(string path, IPipe input) : base(input,null)
+        public NodeWriter(string path,long size, IPipe input) : base(input,null)
         {
             //if (!File.Exists(path)) throw new Exception("File does not exists: " + path);
+            this.size = size;
             writer = new FileStream(path, FileMode.Create);
         }
 
         public override void Start()
         {
+            long pos = 0;
             while(true)
             {
                 byte[] temp = Input.Take();
                 if (temp == null)
                     break;
-                writer.Write(temp, 0, temp.Length);
+                if (pos + temp.Length < size)
+                {
+                    writer.Write(temp, 0, temp.Length);
+                    pos += temp.Length;
+                }
+                else
+                {
+                    writer.Write(temp, 0, (int)(size - pos));
+                    break;
+                }
             }
             writer.Close();            
         }

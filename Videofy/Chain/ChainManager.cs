@@ -24,8 +24,8 @@ namespace Videofy.Chain
             opt.encodingPreset = EncodingPreset.medium;
             opt.cellCount = 1;
             opt.density = 4;
-            opt.isEncodingCRF = false;
-            opt.videoQuality = 20000000;
+            opt.isEncodingCRF = true;
+            opt.videoQuality = 20;
             opt.pxlFmtIn = PixelFormat.YUV420P;
             opt.pxlFmtOut = PixelFormat.YUV420P;
             opt.resolution = ResolutionsEnum.p720;

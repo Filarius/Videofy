@@ -22,7 +22,7 @@ namespace Videofy.Main
     static partial class ExtensionMethods
 
     {
-        public static string ToString(this EncodingPreset preset)
+        public static string ToName(this EncodingPreset preset)
         {
             switch (preset)
             {
@@ -40,7 +40,7 @@ namespace Videofy.Main
             throw new System.ArgumentOutOfRangeException();
         }
 
-        public static EncodingPreset FromString(this EncodingPreset preset, string s)
+        public static EncodingPreset FromName(this EncodingPreset preset, string s)
         {
             switch (s)
             {

@@ -22,13 +22,15 @@ namespace Videofy.Main
 
     static partial class ExtensionMethods
     {
-        public static string ToFriendlyName(this ResolutionsEnum res)
+        public static string ToName(this ResolutionsEnum res)
         {
             return ((int)res).ToString();            
         }
 
-        public static PixelFormat FromFriendlyName(this ResolutionsEnum res,string pxlFmtString)
+        public static ResolutionsEnum FromName(this ResolutionsEnum res,string resolution
         {
+            return (ResolutionsEnum)int.Parse(resolution);
+            /*
             switch (pxlFmtString)
             {
                 case "GRAY": return PixelFormat.Gray;
@@ -38,6 +40,7 @@ namespace Videofy.Main
                 case "YUV444P":
                     return PixelFormat.YUV444P;
             }
+            */
             throw new System.ArgumentOutOfRangeException();
         }
     }

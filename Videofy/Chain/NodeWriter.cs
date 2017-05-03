@@ -16,6 +16,21 @@ namespace Videofy.Chain
         {
             //if (!File.Exists(path)) throw new Exception("File does not exists: " + path);
             this.size = size;
+            if(File.Exists(path))
+            {
+                string temp = Path.GetDirectoryName(path)
+                    + @"\"
+                    + Path.GetFileNameWithoutExtension(path)
+                    + "({0})"
+                    + Path.GetExtension(path);
+
+                int i = 1;
+                do
+                {
+                    path = String.Format(temp, i);
+                    i++;
+                } while (File.Exists(path));
+            }
             writer = new FileStream(path, FileMode.Create);
         }
 

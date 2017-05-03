@@ -23,7 +23,7 @@ namespace Videofy.Main
             resolution = ResolutionsEnum.p720;
             density = 1;
             cellCount = 1;
-            videoQuality = 25;
+            videoQuality = 24;
             isEncodingCRF = true;
             encodingPreset = EncodingPreset.medium;
             pxlFmtIn = PixelFormat.YUV420P;
@@ -184,8 +184,21 @@ namespace Videofy.Main
             cb.Items.Clear();
             foreach(ResolutionsEnum res in Enum.GetValues(typeof(ResolutionsEnum)))
             {
-                cb.Items.Add(res.ToFriendlyName());
+                cb.Items.Add(res.ToName());
                 if (props.resolution == res)
+                {
+                    cb.SelectedIndex = cb.Items.Count - 1;
+                }
+            }
+        }
+
+        public void PopulateEncodingPreset(ComboBox cb)
+        {
+            cb.Items.Clear();
+            foreach (EncodingPreset res in Enum.GetValues(typeof(EncodingPreset)))
+            {
+                cb.Items.Add(res.ToName());
+                if (props.encodingPreset == res)
                 {
                     cb.SelectedIndex = cb.Items.Count - 1;
                 }

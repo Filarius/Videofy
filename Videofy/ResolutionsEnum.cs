@@ -27,7 +27,7 @@ namespace Videofy.Main
             return ((int)res).ToString();            
         }
 
-        public static ResolutionsEnum FromName(this ResolutionsEnum res,string resolution
+        public static ResolutionsEnum FromName(this ResolutionsEnum res,string resolution)
         {
             return (ResolutionsEnum)int.Parse(resolution);
             /*

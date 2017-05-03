@@ -18,8 +18,9 @@ namespace Videofy
     {
         private Wrapper wrapper;
 
-        private Converter man;
-        private OptionsManager options;
+        // private Converter man;
+        private Chain.ChainManager man;
+        private OptionsUI options;
 
         public Form1()
         {
@@ -28,6 +29,12 @@ namespace Videofy
 
         private void button1_Click(object sender, EventArgs e)
         {
+            DialogResult dr = openFileDialog1.ShowDialog();
+            if (dr != DialogResult.OK) { return; }
+            var man = new Chain.ChainManager();
+            man.EncodeFile(openFileDialog1.FileName,options.props);
+            /*
+
             DialogResult dr = openFileDialog1.ShowDialog();
             if (dr != DialogResult.OK) { return; }
             man = new Converter(openFileDialog1.FileName, true);
@@ -43,32 +50,39 @@ namespace Videofy
                 textBox1.Text = q.ToString();
             }
             timer1.Enabled = true;
+            */
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (man.workDone)
+          //  if (man.workDone)
             {
-                lblError.Text = man.error.ToString("0.00");
+            //    lblError.Text = man.error.ToString("0.00");
                 //   lblIsWorking.Text = "DONE";
             }
-            else
+         //   else
             {
                 // lblIsWorking.Text = "WORKING...";
             }
-            lblIsWorking.Text = man.state.ToString();
-            lblDone.Text = man.workMeter.GetDonePercent();           
+         //   lblIsWorking.Text = man.state.ToString();
+           // lblDone.Text = man.workMeter.GetDonePercent();           
 
         }
 
         private void button2_Click(object sender, EventArgs e)
-        {           
+        {
+            DialogResult dr = saveFileDialog1.ShowDialog();
+            if (dr != DialogResult.OK) { return; }
+            var man = new Chain.ChainManager();
+            man.DecodeFile(saveFileDialog1.FileName);
+            /*
             DialogResult dr = openFileDialog2.ShowDialog();
             if (dr != DialogResult.OK) { return; }
             var s = openFileDialog2.FileName;
             man = new Converter(openFileDialog2.FileName, false);
             man.Unpack();
             timer1.Enabled = true;
+            */
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -85,10 +99,10 @@ namespace Videofy
         {
             DialogResult dr = saveFileDialog1.ShowDialog();
             if (dr != DialogResult.OK) { return; }
-            man = new Converter(saveFileDialog1.FileName, tbURL.Text);
+           // man = new Converter(saveFileDialog1.FileName, tbURL.Text);
             timer1.Enabled = true;
             //var dl = new Converter(saveFileDialog1.FileName, tbURL.Text);
-            man.Unpack();
+          //  man.Unpack();
         }
 
         private void tbURL_TextChanged(object sender, EventArgs e)
@@ -161,25 +175,29 @@ namespace Videofy
         private void cbResolution_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (options == null) return;
-            options.SetResolution(((ComboBox)sender).SelectedIndex);
+            //options.SetResolution(((ComboBox)sender).SelectedIndex);
+
+            options.Resolution = ((ComboBox)sender).GetItemText(((ComboBox)sender).SelectedItem);
         }
 
         private void cbDestiny_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (options == null) return;
-            options.SetDensity(((ComboBox)sender).SelectedIndex);
+            //options.SetDensity(((ComboBox)sender).SelectedIndex);
+            options.Density = ((ComboBox)sender).GetItemText(((ComboBox)sender).SelectedItem);
         }
 
         private void cbInputFormat_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (options == null) return;
-            options.SetPxlFmtIn(((ComboBox)sender).SelectedIndex);
+        //    options.SetPxlFmtIn(((ComboBox)sender).SelectedIndex);
+
         }
 
         private void cbOutputFormat_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (options == null) return;
-            options.SetPxlFmtOut(((ComboBox)sender).SelectedIndex);
+        //    options.SetPxlFmtOut(((ComboBox)sender).SelectedIndex);
         }
 
         private void Form1_Shown(object sender, EventArgs e)
@@ -187,7 +205,15 @@ namespace Videofy
             this.Text = Application.ProductName + " "+ Application.ProductVersion;
             if (options == null)
             {
-                options = new OptionsManager(cbResolution, cbDensity, cbInputFormat, cbOutputFormat);
+                options = new OptionsUI();
+                options.PopulateCellCount(cbCellCount);
+                options.PopulateDensity(cbDensity);
+                options.PopulateResolution(cbResolution);
+                options.PopulateEncodingPreset(cbPreset);
+                tbQuality.Text = options.videoQuality;
+                rbQuality.Checked = options.props.isEncodingCRF;
+                rbBitrate.Checked = !options.props.isEncodingCRF;
+                
             }
         }
 
@@ -196,7 +222,7 @@ namespace Videofy
             DialogResult dr = openFileDialog1.ShowDialog();
             if (dr != DialogResult.OK) { return; }
             var man = new Chain.ChainManager();
-            man.EncodeFile(openFileDialog1.FileName);
+            man.EncodeFile(openFileDialog1.FileName,options.props);
         }
 
         private void button10_Click(object sender, EventArgs e)
@@ -205,7 +231,77 @@ namespace Videofy
             if (dr != DialogResult.OK) { return; }
             var man = new Chain.ChainManager();
             man.DecodeFile(saveFileDialog1.FileName);
+        }
 
+        private void cbCellCount_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (options == null) return;
+            options.CellCount = ((ComboBox)sender).GetItemText(((ComboBox)sender).SelectedItem);
+        }
+
+        private void cbPreset_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (options == null) return;
+            options.EncodingPreset = ((ComboBox)sender).GetItemText(((ComboBox)sender).SelectedItem);
+        }
+
+        private void rbBitrate_CheckedChanged(object sender, EventArgs e)
+        {
+            if(rbBitrate.Checked)
+            {
+                rbQuality.Checked = false;
+                options.QualityIsCRF = false;
+                if (tbQuality.Text == "")
+                {
+                    tbQuality.Text = options.videoQuality;
+                }
+                else
+                {
+                    if (tbQuality.Text.Length < 3)
+                    {
+                        tbQuality.Text = "16000000";
+                    }
+                }
+            }
+            
+            
+        }
+
+        private void rbQuality_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbQuality.Checked)
+            {
+                rbBitrate.Checked = false;
+                options.QualityIsCRF = true;
+                if (tbQuality.Text == "")
+                {
+                    tbQuality.Text = options.videoQuality;
+                }
+                else
+                {
+                    if (tbQuality.Text.Length > 3)
+                    {
+                        tbQuality.Text = "24";
+                    }
+                }
+            }
+             
+            
+            
+        }
+
+        private void tbQuality_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                options.videoQuality = tbQuality.Text;
+            }
+            catch 
+            {
+
+               
+            }
+                        
         }
     }
 }

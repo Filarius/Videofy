@@ -55,11 +55,14 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.cbInputFormat = new System.Windows.Forms.ComboBox();
+            this.cbCellCount = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.cbOutputFormat = new System.Windows.Forms.ComboBox();
+            this.cbPreset = new System.Windows.Forms.ComboBox();
             this.button9 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
+            this.rbBitrate = new System.Windows.Forms.RadioButton();
+            this.rbQuality = new System.Windows.Forms.RadioButton();
+            this.tbQuality = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -263,15 +266,6 @@
             // 
             this.cbResolution.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbResolution.FormattingEnabled = true;
-            this.cbResolution.Items.AddRange(new object[] {
-            "144p",
-            "240p",
-            "360p",
-            "480p",
-            "720p",
-            "1080p",
-            "1440p",
-            "2160p"});
             this.cbResolution.Location = new System.Drawing.Point(15, 115);
             this.cbResolution.Name = "cbResolution";
             this.cbResolution.Size = new System.Drawing.Size(54, 21);
@@ -282,11 +276,6 @@
             // 
             this.cbDensity.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbDensity.FormattingEnabled = true;
-            this.cbDensity.Items.AddRange(new object[] {
-            "1 bit",
-            "2 bits",
-            "3 bits",
-            "4 bits"});
             this.cbDensity.Location = new System.Drawing.Point(81, 115);
             this.cbDensity.Name = "cbDensity";
             this.cbDensity.Size = new System.Drawing.Size(48, 21);
@@ -314,47 +303,40 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(132, 99);
+            this.label5.Location = new System.Drawing.Point(135, 99);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(87, 13);
+            this.label5.Size = new System.Drawing.Size(55, 13);
             this.label5.TabIndex = 22;
-            this.label5.Text = "Inner pixel format";
+            this.label5.Text = "Cell Count";
             // 
-            // cbInputFormat
+            // cbCellCount
             // 
-            this.cbInputFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbInputFormat.FormattingEnabled = true;
-            this.cbInputFormat.Items.AddRange(new object[] {
-            "Gray",
-            "YUV420p",
-            "YUV444p"});
-            this.cbInputFormat.Location = new System.Drawing.Point(135, 115);
-            this.cbInputFormat.Name = "cbInputFormat";
-            this.cbInputFormat.Size = new System.Drawing.Size(97, 21);
-            this.cbInputFormat.TabIndex = 23;
-            this.cbInputFormat.SelectedIndexChanged += new System.EventHandler(this.cbInputFormat_SelectedIndexChanged);
+            this.cbCellCount.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbCellCount.FormattingEnabled = true;
+            this.cbCellCount.Location = new System.Drawing.Point(135, 115);
+            this.cbCellCount.Name = "cbCellCount";
+            this.cbCellCount.Size = new System.Drawing.Size(97, 21);
+            this.cbCellCount.TabIndex = 23;
+            this.cbCellCount.SelectedIndexChanged += new System.EventHandler(this.cbCellCount_SelectedIndexChanged);
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(235, 99);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(79, 13);
+            this.label6.Size = new System.Drawing.Size(85, 13);
             this.label6.TabIndex = 24;
-            this.label6.Text = "File pixel format";
+            this.label6.Text = "Encoding Preset";
             // 
-            // cbOutputFormat
+            // cbPreset
             // 
-            this.cbOutputFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbOutputFormat.FormattingEnabled = true;
-            this.cbOutputFormat.Items.AddRange(new object[] {
-            "YUV420p",
-            "YUV444p"});
-            this.cbOutputFormat.Location = new System.Drawing.Point(238, 115);
-            this.cbOutputFormat.Name = "cbOutputFormat";
-            this.cbOutputFormat.Size = new System.Drawing.Size(97, 21);
-            this.cbOutputFormat.TabIndex = 25;
-            this.cbOutputFormat.SelectedIndexChanged += new System.EventHandler(this.cbOutputFormat_SelectedIndexChanged);
+            this.cbPreset.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbPreset.FormattingEnabled = true;
+            this.cbPreset.Location = new System.Drawing.Point(238, 115);
+            this.cbPreset.Name = "cbPreset";
+            this.cbPreset.Size = new System.Drawing.Size(97, 21);
+            this.cbPreset.TabIndex = 25;
+            this.cbPreset.SelectedIndexChanged += new System.EventHandler(this.cbPreset_SelectedIndexChanged);
             // 
             // button9
             // 
@@ -376,16 +358,52 @@
             this.button10.UseVisualStyleBackColor = true;
             this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
+            // rbBitrate
+            // 
+            this.rbBitrate.AutoSize = true;
+            this.rbBitrate.Location = new System.Drawing.Point(341, 82);
+            this.rbBitrate.Name = "rbBitrate";
+            this.rbBitrate.Size = new System.Drawing.Size(100, 17);
+            this.rbBitrate.TabIndex = 28;
+            this.rbBitrate.TabStop = true;
+            this.rbBitrate.Text = "Constant Bitrate";
+            this.rbBitrate.UseVisualStyleBackColor = true;
+            this.rbBitrate.CheckedChanged += new System.EventHandler(this.rbBitrate_CheckedChanged);
+            // 
+            // rbQuality
+            // 
+            this.rbQuality.AutoSize = true;
+            this.rbQuality.Location = new System.Drawing.Point(341, 99);
+            this.rbQuality.Name = "rbQuality";
+            this.rbQuality.Size = new System.Drawing.Size(102, 17);
+            this.rbQuality.TabIndex = 29;
+            this.rbQuality.TabStop = true;
+            this.rbQuality.Text = "Constant Quality";
+            this.rbQuality.UseVisualStyleBackColor = true;
+            this.rbQuality.CheckedChanged += new System.EventHandler(this.rbQuality_CheckedChanged);
+            // 
+            // tbQuality
+            // 
+            this.tbQuality.Location = new System.Drawing.Point(341, 116);
+            this.tbQuality.Name = "tbQuality";
+            this.tbQuality.Size = new System.Drawing.Size(102, 20);
+            this.tbQuality.TabIndex = 30;
+            this.tbQuality.Text = "10000000";
+            this.tbQuality.TextChanged += new System.EventHandler(this.tbQuality_TextChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(504, 144);
+            this.Controls.Add(this.tbQuality);
+            this.Controls.Add(this.rbQuality);
+            this.Controls.Add(this.rbBitrate);
             this.Controls.Add(this.button10);
             this.Controls.Add(this.button9);
-            this.Controls.Add(this.cbOutputFormat);
+            this.Controls.Add(this.cbPreset);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.cbInputFormat);
+            this.Controls.Add(this.cbCellCount);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -449,11 +467,14 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.ComboBox cbInputFormat;
+        private System.Windows.Forms.ComboBox cbCellCount;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.ComboBox cbOutputFormat;
+        private System.Windows.Forms.ComboBox cbPreset;
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.RadioButton rbBitrate;
+        private System.Windows.Forms.RadioButton rbQuality;
+        private System.Windows.Forms.TextBox tbQuality;
     }
 }
 

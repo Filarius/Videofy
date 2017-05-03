@@ -75,15 +75,16 @@ namespace Videofy.Chain.Types
 
             _isRun = true;
             _proc.Start();
-            /*
+
+            
             try
             {
-                _proc.PriorityClass = ProcessPriorityClass.BelowNormal;
+               // _proc.PriorityClass = ProcessPriorityClass.BelowNormal;
             }
             catch 
             {
             }
-            */
+            
 
             // seems best low CPU solution to check if process if alive 
             // and wrapper need to do cleanup
@@ -142,6 +143,10 @@ namespace Videofy.Chain.Types
 
         public void Hatiko()
         {
+            while(_writeQueue.Count >0)
+            {
+                Wait(1000);
+            }
             try { _proc.StandardInput.BaseStream.Close(); } catch { }
             while (_isRun)
             {
@@ -254,7 +259,7 @@ namespace Videofy.Chain.Types
                 }
                 catch (Exception e)
                 {
-                    Console.Write("Extract " + e.ToString());
+                    Console.Write("EXTRACT BYTES " + e.ToString());
                     break;
                 }
             }
@@ -299,6 +304,7 @@ namespace Videofy.Chain.Types
                 }
                 catch (Exception e)
                 {
+                    Console.WriteLine("INTRACT BYTES ERROR");
                     Console.Write(e.ToString());
                     break;
                 }

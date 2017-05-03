@@ -18,8 +18,9 @@ namespace Videofy.Chain
             _tokenSource = new CancellationTokenSource();
         }
 
-        public void EncodeFile(string path)
+        public void EncodeFile(string path,OptionsStruct opt)
         {
+            /*
             OptionsStruct opt = new OptionsStruct(0);
             opt.encodingPreset = EncodingPreset.medium;
             opt.cellCount = 1;
@@ -29,6 +30,7 @@ namespace Videofy.Chain
             opt.pxlFmtIn = PixelFormat.YUV420P;
             opt.pxlFmtOut = PixelFormat.YUV420P;
             opt.resolution = ResolutionsEnum.p720;
+            */
 
             OptionsStruct headopt = opt;
             headopt.density = 1;

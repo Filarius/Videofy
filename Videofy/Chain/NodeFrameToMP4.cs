@@ -68,11 +68,14 @@ namespace Videofy.Chain
 
         public override void Start()
         {
+            int pos = 0;
             ffmpeg.StarByte();
             while(Input.IsOpen|(Input.Count>0))
             {
                 byte[] temp = Input.Take(frameSize);
+                pos += temp.Length;
                 ffmpeg.Write(temp);
+                
                 String s;
                 while ((s = ffmpeg.ErrorString()) != "")
                 {
@@ -81,9 +84,15 @@ namespace Videofy.Chain
                 while ((s = ffmpeg.ReadString()) != "")
                 {
                     Console.Write(s);
-                }
-                
+                }                
             }
+            /*
+            Console.WriteLine("MP4 TO MP4 TO MP4 TO MP4 TO");
+            Console.WriteLine(pos.ToString());
+            Console.WriteLine(pos.ToString());
+            Console.WriteLine(pos.ToString());
+            Console.WriteLine(pos.ToString());
+            */
             ffmpeg.Hatiko();
         }
 

@@ -46,12 +46,15 @@ namespace Videofy.Chain
         {
             ffmpeg.StarByte();
             String s;
+            //debug
+            int i = 0;
+
             byte[] temp;
             while (true)
             {
-                while ((ffmpeg.ErrorString()) != "")
+                while ((s=ffmpeg.ErrorString()) != "")
                 {
-                    // Console.WriteLine(s);
+                     Console.WriteLine(s);
                 }                
 
                 if (ffmpeg.IsRunning)
@@ -70,8 +73,16 @@ namespace Videofy.Chain
                         break;
                     }
                 }
+                //debug
+                i += temp.Length;
+                
                 Output.Add(temp);
             }
+            //debug
+            Console.WriteLine(i);
+            Console.WriteLine(i);
+            Console.WriteLine(i);
+            Console.WriteLine(i);
             Output.Complete();
             ffmpeg.Terminate();
         }

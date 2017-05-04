@@ -5,23 +5,30 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenCvSharp.CPlusPlus;
 using Videofy.Main;
+using Videofy.Chain.Types;
 
 
 namespace Videofy.Chain
 {
-    class NodeBlockBase:ChainNode
+    class NodeBlockBase : ChainNode
     {
         private OptionsStruct options;
         private int[] valueBounds;
         private int[,] snakeIteratorCore;
+        private DFFrameBlock block;
+        private byte[] blockarray;
+        private float[,] dctarray;
+
 
         public NodeBlockBase(OptionsStruct options, IPipe input, IPipe output) : base(input, output)
         {
             this.options = options;
             valueBounds = new int[2];
-            BoundsInit();
             snakeIteratorCore = new int[64, 2];
             SnakeIteratorInit();
+            BoundsInit();
+            blockarray = new byte[64];
+            dctarray = new float[8, 8];
 
             MaxError = 0;
         }
@@ -205,7 +212,7 @@ namespace Videofy.Chain
             //normalize
             float tmp;
             float max = (1 << options.density) - 1;
-            tmp = value + valueBounds[0];
+            tmp = value - valueBounds[0];
             tmp = tmp / (valueBounds[1] - valueBounds[0]);
             if (tmp < 0) { tmp = 0; }
             else if (tmp > 1) { tmp = 1; }
@@ -239,13 +246,14 @@ namespace Videofy.Chain
             }
         }
 
+
         private void PlainTransformBitsToBlock()
         {
 
             byte[] bits = Input.Take(options.density);
-            byte cell = (byte)Math.Round(BitsToCell(bits),MidpointRounding.AwayFromZero);
+            byte cell = (byte)Math.Round(BitsToCell(bits), MidpointRounding.AwayFromZero);
             byte[] block = new byte[64];
-            for(int i = 0; i < 64; i++)
+            for (int i = 0; i < 64; i++)
             {
                 block[i] = cell;
             }
@@ -255,35 +263,66 @@ namespace Videofy.Chain
         private void PlainTransformBitsFromBlock()
         {
             byte[] block = Input.Take(64);
-            
+
             float sum = 0;
-            for(int i = 0; i < 64; i++)
+            for (int i = 0; i < 64; i++)
             {
                 sum += block[i];
             }
             sum = sum / 64;
             byte[] bits = BitsFromCell(sum);
-           // Debug.i += bits.Length;
+            // Debug.i += bits.Length;
             Output.Add(bits);
         }
 
         private void DCTTransformBitsToBlock()
         {
-            throw new NotImplementedException();
+            int i;
+            dctarray[0, 0] = 1024;
+
+            for (i = 1; i < options.cellCount + 1; i++)
+            {
+                byte[] temp = Input.Take(options.density);
+
+                SnakeArraySet(dctarray, i, BitsToCell(temp));
+            }
+            for (i = (options.cellCount) + 1; i < 64; i++)
+            {
+                SnakeArraySet(dctarray, i, 0);
+            }
+
+            byte[] ar = new byte[64];
+            DFFrameBlock blok = new DFFrameBlock(ar);
+            Mat mat = block.Body.Idct();
+            mat.ConvertTo(blok.Body, MatType.CV_8U);
+            mat.Dispose();
+            Output.Add(blok.ToArray());
+            blok.Free();
         }
 
         private void DCTTransformBitsFromBlock()
         {
-            throw new NotImplementedException();
+            byte[] temp = Input.Take(64);
+            DFFrameBlock blok = new DFFrameBlock(temp);
+            Mat mat = new Mat();
+            blok.Body.ConvertTo(mat, MatType.CV_32FC1);
+            mat = mat.Dct();
+            mat.CopyTo(block.Body);
+            for (int i = 1; i < options.cellCount + 1; i++)
+            {
+                Output.Add(BitsFromCell(SnakeArrayGet(dctarray, i)));
+            }
+            mat.Dispose();
+            blok.Free();
         }
 
         protected void StartBitsToBlock()
         {
             //DEBUG
             int cnt = 0;
-            if(options.density==1)
+            if (options.density == 1)
             {
-                int a=89;
+                int a = 89;
             }
             //DEBUG
             if (options.cellCount == 1)
@@ -291,20 +330,23 @@ namespace Videofy.Chain
                 while ((Input.Count > 0) | (Input.IsOpen)) // pipe have data or not closed
                 {
                     //DEBUG
-                    if(cnt>1878540)
-                    if (cnt % 1 ==0)
-                  //      Console.WriteLine(cnt);
-                    cnt+=1;
+                    if (cnt > 1878540)
+                        if (cnt % 1 == 0)
+                            //      Console.WriteLine(cnt);
+                            cnt += 1;
                     //DEBUG
                     PlainTransformBitsToBlock();
                 }
             }
             else
             {
+                
+                block = new DFFrameBlock(dctarray);
                 while ((Input.Count > 0) | (Input.IsOpen)) // pipe have data or not closed
                 {
                     DCTTransformBitsToBlock();
                 }
+                block.Free();
             }
             Output.Complete();
         }
@@ -322,7 +364,7 @@ namespace Videofy.Chain
                     if (i > 1878546)
                         if (i % 1 == 0)
                         {
-                 //           Console.WriteLine(i);
+                            //           Console.WriteLine(i);
                         }
                     i++;
                     //DEBUG
@@ -331,16 +373,18 @@ namespace Videofy.Chain
             }
             else
             {
+                block = new DFFrameBlock(dctarray);
                 while ((Input.Count > 0) | (Input.IsOpen)) // pipe have data or not closed
                 {
                     DCTTransformBitsFromBlock();
                 }
+                block.Free();
             }
             Output.Complete();
             //Console.WriteLine(Debug.i.ToString());
         }
 
-        
+
 
     }
 }

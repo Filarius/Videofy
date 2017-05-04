@@ -8,12 +8,13 @@ using Videofy.Main;
 namespace Videofy.Chain
 {
     
-    class NodeFrameFromMP4:ChainNode
+    class NodeFrameFromYoutube:ChainNode
     {
         private  DFffmpeg ffmpeg;
+        private DFYoutube youtube;
         private OptionsStruct opt;
         private int frameSize;
-        public NodeFrameFromMP4(String path,OptionsStruct opt, IPipe Output):base(null,Output)
+        public NodeFrameFromYoutube(String path,OptionsStruct opt, IPipe Output):base(null,Output)
         {
             this.opt = opt;
             InitFrameSize();

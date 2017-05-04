@@ -13,6 +13,7 @@ namespace Videofy.Chain.Types
         private GCHandle handle;
         private IntPtr ptr;
         private byte[] block;
+        private float[,] blockf;
 
         public Mat Body { get; set; }
 
@@ -25,6 +26,15 @@ namespace Videofy.Chain.Types
             //Body = new Mat(8, 8, MatType.CV_8U, 0);
         }       
         
+        public DFFrameBlock(float[,] array)
+        {
+            if (array.Length != 64) throw new ArgumentOutOfRangeException();
+            blockf = array;
+            handle = GCHandle.Alloc(blockf, GCHandleType.Pinned);
+            ptr = handle.AddrOfPinnedObject();
+            Body = new Mat(8, 8, MatType.CV_32FC1, ptr);
+        }
+
         public DFFrameBlock(byte[] array)
         {
             if (array.Length != 64) throw new ArgumentOutOfRangeException();
@@ -37,6 +47,11 @@ namespace Videofy.Chain.Types
         public byte[] ToArray()
         {
             return block;
+        }
+
+        public float[,] ToArrayF()
+        {
+            return blockf;
         }
 
         public void Free()

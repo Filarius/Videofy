@@ -148,6 +148,7 @@
     <Compile Include="Chain\NodeBlocksFromFrame.cs" />
     <Compile Include="Chain\NodeBlocksToFrame.cs" />
     <Compile Include="Chain\NodeDebugRawStorage.cs" />
+    <Compile Include="Chain\NodeFrameFromYoutube.cs" />
     <Compile Include="Chain\NodeFrameFromMP4.cs" />
     <Compile Include="Chain\NodeFrameToMP4.cs" />
     <Compile Include="Chain\NodeFromBits.cs" />
@@ -157,6 +158,7 @@
     <Compile Include="Chain\NodeWriter.cs" />
     <Compile Include="Chain\Pipe.cs" />
     <Compile Include="Chain\PipeJoiner.cs" />
+    <Compile Include="Chain\Types\DFYoutube.cs" />
     <Compile Include="Checks.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="ConverterState.cs" />

@@ -99,7 +99,7 @@ namespace Videofy
         {
             DialogResult dr = saveFileDialog1.ShowDialog();
             if (dr != DialogResult.OK) { return; }
-           // man = new Converter(saveFileDialog1.FileName, tbURL.Text);
+            man = new Converter(saveFileDialog1.FileName, tbURL.Text);
             timer1.Enabled = true;
             //var dl = new Converter(saveFileDialog1.FileName, tbURL.Text);
           //  man.Unpack();

@@ -7,33 +7,43 @@ using Videofy.Chain.Types;
 using Videofy.Main;
 namespace Videofy.Chain
 {
-    
-    class NodeFrameFromYoutube:ChainNode
+
+    class NodeFrameFromYoutube : ChainNode
     {
-        private  DFffmpeg ffmpeg;
+        private DFffmpeg ffmpeg;
         private DFYoutube youtube;
         private OptionsStruct opt;
         private int frameSize;
-        public NodeFrameFromYoutube(String path,OptionsStruct opt, IPipe Output):base(null,Output)
+        public NodeFrameFromYoutube(String url, OptionsStruct opt, IPipe Output) : base(null, Output)
         {
             this.opt = opt;
             InitFrameSize();
-            ffmpeg = new DFffmpeg(GenerateArgs(path, opt));            
+            ffmpeg = new DFffmpeg(GenerateArgsFFmpeg(opt));
+            youtube = new DFYoutube(GenerateArgsYoutube(url));
         }
 
-        private String GenerateArgs(String path, OptionsStruct opt)
+        private String GenerateArgsYoutube(String url)
+        {
+            string result = " -O "
+                + url
+                  + " "
+                + " best";
+            return result;
+        }
+
+        private String GenerateArgsFFmpeg(OptionsStruct opt)
         {
             string result =
                 "-y -i "
-                + "\"" + path + "\""
+                + "-"
                   + " "
                 + "-f image2pipe "
                 + "-pix_fmt "
                   + opt.pxlFmtIn.ToName()
                   + " "
                 + "-vcodec rawvideo "
-                + "-";                       
-            return result;                 
+                + "-";
+            return result;
         }
 
         private void InitFrameSize()
@@ -46,17 +56,35 @@ namespace Videofy.Chain
         public override void Start()
         {
             ffmpeg.StarByte();
+            youtube.StarByte();
+            Boolean youtubeStillRun;
             String s;
             //debug
-           // int i = 0;
+            // int i = 0;
 
             byte[] temp;
             while (true)
             {
-                while ((s=ffmpeg.ErrorString()) != "")
+                while ((ffmpeg.Error()) != null)
                 {
-                  //   Console.WriteLine(s);
-                }                
+                    //   Console.WriteLine(s);
+                }
+                while ((ffmpeg.Read()) != null)
+                {
+                    //   Console.WriteLine(s);
+                }
+                while (youtube.Error() != null)
+                {
+
+                }
+
+                youtubeStillRun = youtube.IsRunning;
+                temp = youtube.Read();
+                if (temp != null)
+                {
+                    ffmpeg.Write(temp);
+                }
+
 
                 if (ffmpeg.IsRunning)
                 {
@@ -70,19 +98,25 @@ namespace Videofy.Chain
                 {
                     temp = ffmpeg.Read();
                     if (temp == null)
-                    {
-                        break;
-                    }
+                        if (youtubeStillRun) //be sure there was no more data 
+                                             //from youtube after last request                       
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            break;
+                        }
+
                 }
-                //debug
-             //   i += temp.Length;
-                
+
                 Output.Add(temp);
             }
             //debug
-          
+
             Output.Complete();
             ffmpeg.Terminate();
+            youtube.Terminate();
         }
 
 

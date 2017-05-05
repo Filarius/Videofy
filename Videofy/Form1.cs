@@ -31,8 +31,10 @@ namespace Videofy
         {
             DialogResult dr = openFileDialog1.ShowDialog();
             if (dr != DialogResult.OK) { return; }
-            var man = new Chain.ChainManager();
+            man = new Chain.ChainManager();
             man.EncodeFile(openFileDialog1.FileName,options.props);
+
+            timer1.Enabled = true;
             /*
 
             DialogResult dr = openFileDialog1.ShowDialog();
@@ -64,17 +66,27 @@ namespace Videofy
             {
                 // lblIsWorking.Text = "WORKING...";
             }
-         //   lblIsWorking.Text = man.state.ToString();
-           // lblDone.Text = man.workMeter.GetDonePercent();           
+            //   lblIsWorking.Text = man.state.ToString();
+            // lblDone.Text = man.workMeter.GetDonePercent();           
+
+            lblDone.Text = man.Monitor.Percent.ToString();
 
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
+            DialogResult dr = openFileDialog2.ShowDialog();
+            if (dr != DialogResult.OK) { return; }
+            man = new Chain.ChainManager();
+            man.DecodeFile(openFileDialog2.FileName);
+
+            timer1.Enabled = true;
+            /*
             DialogResult dr = saveFileDialog1.ShowDialog();
             if (dr != DialogResult.OK) { return; }
             var man = new Chain.ChainManager();
             man.DecodeFile(saveFileDialog1.FileName);
+            */
             /*
             DialogResult dr = openFileDialog2.ShowDialog();
             if (dr != DialogResult.OK) { return; }
@@ -99,7 +111,7 @@ namespace Videofy
         {
             DialogResult dr = saveFileDialog1.ShowDialog();
             if (dr != DialogResult.OK) { return; }
-            man = new Converter(saveFileDialog1.FileName, tbURL.Text);
+          //  man = new Converter(saveFileDialog1.FileName, tbURL.Text);
             timer1.Enabled = true;
             //var dl = new Converter(saveFileDialog1.FileName, tbURL.Text);
           //  man.Unpack();

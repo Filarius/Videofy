@@ -342,6 +342,8 @@ namespace Videofy.Chain.Types
             try
             {
                 byte[] temp = null;
+                if (queue.Count == 0)
+                    return null;
                 if(queue.TryTake(out temp))
                 {
                     return temp;

@@ -141,6 +141,7 @@
     <Compile Include="Chain\Debug.cs" />
     <Compile Include="Chain\Helpers\DataHeader.cs" />
     <Compile Include="Chain\Helpers\MP4Info.cs" />
+    <Compile Include="Chain\Helpers\WorkMonitor.cs" />
     <Compile Include="Chain\IPipe.cs" />
     <Compile Include="Chain\NodeBitsFromBlocks.cs" />
     <Compile Include="Chain\NodeBitsToBlock.cs" />

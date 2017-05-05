@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 using System.Threading;
 using Videofy.Main;
 using Videofy.Chain.Helpers;
+using System.IO;
 
 namespace Videofy.Chain
 {
     class ChainManager
     {
         private CancellationTokenSource _tokenSource;
+        public WorkMonitor Monitor;
 
         public ChainManager()
         {
             _tokenSource = new CancellationTokenSource();
+            Monitor = new WorkMonitor();            
         }
 
         public void EncodeFile(string path,OptionsStruct opt)
@@ -31,6 +34,11 @@ namespace Videofy.Chain
             opt.pxlFmtOut = PixelFormat.YUV420P;
             opt.resolution = ResolutionsEnum.p720;
             */
+            Monitor.CurrentWork = 0;
+
+            string filename = 
+                Path.GetDirectoryName(path) + @"\" +
+                Path.GetFileName(path) + @".mp4";
 
             OptionsStruct headopt = opt;
             headopt.density = 1;
@@ -39,7 +47,7 @@ namespace Videofy.Chain
             List<ChainNode> nodes = new List<ChainNode>();
             Pipe pipein = new Pipe(_tokenSource.Token);
             ChainNode node;
-            node = new NodeReader(path, pipein);
+            node = new NodeReader(path, pipein, Monitor);
             nodes.Add(node);
             Pipe pipeout = pipein;
 
@@ -79,12 +87,15 @@ namespace Videofy.Chain
             pipeout = pipein;
 
             pipein = new Pipe(_tokenSource.Token);
-            node = new NodeFrameToMP4("out.mp4", opt, pipeout);
+            node = new NodeFrameToMP4(filename, opt, pipeout);
             //node = new NodeDebugRawStorage(pipeout, null);
             nodes.Add(node);
 
             Task.Run(() =>
-                (Parallel.ForEach(nodes, (n) => n.Start()))
+                {
+                    Parallel.ForEach(nodes, (n) => n.Start());
+                    Monitor.Add(1);
+                }
              );
 
             int f = 0;
@@ -92,7 +103,26 @@ namespace Videofy.Chain
 
         public void DecodeFile(string path)
         {
-            int width = (new MP4Info("out.mp4")).GetWidth();
+            Decode(path,"");
+        }
+
+        public void DecodeUrl(string path, string url)
+        {
+            Decode(path, url);
+        }
+
+        private void Decode(string path, string url)
+        {
+            Monitor.CurrentWork = 0;
+            int width;
+            if (url == "")
+            {
+                width = (new MP4Info()).GetWidthFromPath(path);
+            }
+            else
+            {
+                width = (new MP4Info()).GetWidthFromUrl(url);                
+            }
 
             OptionsStruct opt = new OptionsStruct(0);
             opt.cellCount = 1;
@@ -112,7 +142,14 @@ namespace Videofy.Chain
             /*
             node = new NodeDebugRawStorage(null,pipein);
             */
-            node = new NodeFrameFromMP4("out.mp4", opt, pipein);
+            if (url == "")
+            {
+                node = new NodeFrameFromMP4(path, opt, pipein);
+            }
+            else
+            {
+                node = new NodeFrameFromYoutube(url,opt,pipein);
+            }
             nodes.Add(node);
             ChainNode n1 = node;
             Pipe pipeout = pipein;
@@ -146,12 +183,15 @@ namespace Videofy.Chain
             pipeout = pipein;
             
             pipein = new Pipe(_tokenSource.Token);
-            node = new NodeWriter(fileName, fileSize, pipeout);
+            node = new NodeWriter(fileName, fileSize, pipeout, Monitor);
             nodes.Add(node);
 
 
             Task.Run(() =>
-                Parallel.ForEach(nodes, (n) => n.Start())
+                {
+                    Parallel.ForEach(nodes, (n) => n.Start());
+                    Monitor.Add(1);
+                }
             );
 
         }

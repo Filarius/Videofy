@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Videofy.Chain.Helpers;
 
 namespace Videofy.Chain
 {
@@ -11,8 +12,9 @@ namespace Videofy.Chain
     {
         private FileStream writer;
         private long size;
+        private WorkMonitor Monitor;
 
-        public NodeWriter(string path,long size, IPipe input) : base(input,null)
+        public NodeWriter(string path,long size, IPipe input,WorkMonitor Monitor) : base(input,null)
         {
             //if (!File.Exists(path)) throw new Exception("File does not exists: " + path);
             this.size = size;
@@ -32,6 +34,9 @@ namespace Videofy.Chain
                 } while (File.Exists(path));
             }
             writer = new FileStream(path, FileMode.Create);
+            Monitor.TotalWork = (int)size;
+            this.Monitor = Monitor;
+
         }
 
         public override void Start()
@@ -46,13 +51,16 @@ namespace Videofy.Chain
                 {
                     writer.Write(temp, 0, temp.Length);
                     pos += temp.Length;
+                    Monitor.Add(temp.Length);
                 }
                 else
                 {
                     writer.Write(temp, 0, (int)(size - pos));
+                    Monitor.Add((int)(size - pos));
                     break;
                 }
             }
+            Monitor.Add(-1);
             writer.Close();            
         }
     }

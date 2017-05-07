@@ -10,7 +10,7 @@ namespace Videofy.Tools
 {
     class Byter
     {
-        private byte _bppRatio;
+        //private byte _bppRatio;
         private MemoryStream _bytes;
         private MemoryStream _data;
         private int _BLOCK_SIZE = Config.BlockSize;
@@ -32,7 +32,7 @@ namespace Videofy.Tools
         {
             _bytes = new MemoryStream(Config.BlockSize);
             _data = new MemoryStream(Config.BlockSize);
-            _bppRatio = 1;
+            //_bppRatio = 1;
             _bits = new List<byte>();
             _error = 0;
             mem = new List<byte>();
@@ -60,7 +60,7 @@ namespace Videofy.Tools
             if (deep == 0) { Decode0(force); return; }
             if (deep == 1) { Decode1(force); return; }
 
-            float t;
+            //float t;
             int list_len = deep;
 
             byte[] buff = new byte[_bytes.Position];

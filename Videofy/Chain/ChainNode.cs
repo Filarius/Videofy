@@ -14,8 +14,8 @@ namespace Videofy.Chain
 
         private IPipe _input, _output;
         private int _chunkSize;
-        private Task _task;
-        private NodeFunc _func;
+       // private Task _task;
+       // private NodeFunc _func;
 
         public IPipe Input
         {            

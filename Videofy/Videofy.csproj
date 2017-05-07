@@ -154,6 +154,8 @@
     <Compile Include="Chain\NodeBlocksFromFrame.cs" />
     <Compile Include="Chain\NodeBlocksToFrame.cs" />
     <Compile Include="Chain\NodeDebugRawStorage.cs" />
+    <Compile Include="Chain\NodeECCDecoder.cs" />
+    <Compile Include="Chain\NodeECCEncoder.cs" />
     <Compile Include="Chain\NodeFrameFromYoutube.cs" />
     <Compile Include="Chain\NodeFrameFromMP4.cs" />
     <Compile Include="Chain\NodeFrameToMP4.cs" />

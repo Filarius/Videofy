@@ -69,10 +69,6 @@ namespace Videofy.Dataflow
             {
                 x += dx;
                 y += dy;
-                if (k > 26)
-                {
-                    k = k;
-                }
                 _snakeIteratorCore[k, 0] = x;
                 _snakeIteratorCore[k, 1] = y;
                 if ((x == 0) & (y == 0))

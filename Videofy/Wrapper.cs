@@ -27,7 +27,7 @@ namespace Videofy.Main
         private Thread _tread, _twrite, _terror;
         private Object rLocker, wLocker, eLocker;
         private bool _isRun;
-        private int _charBlock = 1024000 / sizeof(char);
+        //private int _charBlock = 1024000 / sizeof(char);
         private int _byteBlock = 1024000;
 
         public Wrapper(string Path, string args)

@@ -42,11 +42,6 @@ namespace Videofy.Chain
             {
                 x += dx;
                 y += dy;
-                if (k > 26)
-                {
-                    //debug remove this later
-                    k = k;
-                }
                 snakeIteratorCore[k, 0] = x;
                 snakeIteratorCore[k, 1] = y;
                 if ((x == 0) & (y == 0))

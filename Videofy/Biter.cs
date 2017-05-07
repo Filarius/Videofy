@@ -7,7 +7,7 @@ namespace Videofy.Tools
 {
     class Biter
     {
-        private byte _bppRatio;
+        //private byte _bppRatio;
         private MemoryStream _bits;
         private MemoryStream _data;
         private int _BLOCK_SIZE = Config.BlockSize;
@@ -26,6 +26,7 @@ namespace Videofy.Tools
 
             _bytelist = new List<byte>();
 
+            /*
             _bppRatio = 1;
 
             if (bppRatio < 1)
@@ -36,6 +37,7 @@ namespace Videofy.Tools
             {
                 _bppRatio = 1;
             }
+            */
         }
 
         private int Encode(bool force)

@@ -16,7 +16,7 @@ namespace Videofy
 {
     public partial class Form1 : Form
     {
-        private Wrapper wrapper;
+       // private Wrapper wrapper;
 
         // private Converter man;
         private Chain.ChainManager man;

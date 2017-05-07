@@ -18,11 +18,13 @@ namespace Videofy.Chain
         public ChainManager()
         {
             _tokenSource = new CancellationTokenSource();
-            Monitor = new WorkMonitor();            
+            Monitor = new WorkMonitor();
         }
 
-        public void EncodeFile(string path,OptionsStruct opt)
+        public void EncodeFile(string path, OptionsStruct opt)
         {
+
+            
             /*
             OptionsStruct opt = new OptionsStruct(0);
             opt.encodingPreset = EncodingPreset.medium;
@@ -36,13 +38,13 @@ namespace Videofy.Chain
             */
             Monitor.CurrentWork = 0;
 
-            string filename = 
+            string filename =
                 Path.GetDirectoryName(path) + @"\" +
                 Path.GetFileName(path) + @".mp4";
 
             OptionsStruct headopt = opt;
             headopt.density = 1;
-            headopt.cellCount = 1;            
+            headopt.cellCount = 1;
 
             List<ChainNode> nodes = new List<ChainNode>();
             Pipe pipein = new Pipe(_tokenSource.Token);
@@ -50,6 +52,11 @@ namespace Videofy.Chain
             node = new NodeReader(path, pipein, Monitor);
             nodes.Add(node);
             Pipe pipeout = pipein;
+
+            pipein = new Pipe(_tokenSource.Token);
+            node = new NodeECCEncoder(pipeout, pipein);
+            nodes.Add(node);
+            pipeout = pipein;
 
             pipein = new Pipe(_tokenSource.Token);
             node = new NodeToBits(pipeout, pipein);
@@ -71,15 +78,15 @@ namespace Videofy.Chain
 
             pipeout = pipein;
             pipein = new Pipe(_tokenSource.Token);
-            node = new NodeBitsToBlock(headopt, pipeout, pipein);                        
-            Pipe pipeheader = pipein;                     
+            node = new NodeBitsToBlock(headopt, pipeout, pipein);
+            Pipe pipeheader = pipein;
             nodes.Add(node);
             //HEADER END
 
             var plist = new List<Pipe>();
             plist.Add(pipeheader);
             plist.Add(pipebody);
-            IPipe pipejoiner = new PipeJoiner(_tokenSource.Token, plist);            
+            IPipe pipejoiner = new PipeJoiner(_tokenSource.Token, plist);
 
             pipein = new Pipe(_tokenSource.Token);
             node = new NodeBlocksToFrame(opt, pipejoiner, pipein);
@@ -96,14 +103,15 @@ namespace Videofy.Chain
                     Parallel.ForEach(nodes, (n) => n.Start());
                     Monitor.Add(1);
                 }
+                ,
+                _tokenSource.Token
              );
 
-            int f = 0;
         }
 
         public void DecodeFile(string path)
         {
-            Decode(path,"");
+            Decode(path, "");
         }
 
         public void DecodeUrl(string path, string url)
@@ -121,7 +129,7 @@ namespace Videofy.Chain
             }
             else
             {
-                width = (new MP4Info()).GetWidthFromUrl(url);                
+                width = (new MP4Info()).GetWidthFromUrl(url);
             }
 
             OptionsStruct opt = new OptionsStruct(0);
@@ -148,7 +156,7 @@ namespace Videofy.Chain
             }
             else
             {
-                node = new NodeFrameFromYoutube(url,opt,pipein);
+                node = new NodeFrameFromYoutube(url, opt, pipein);
             }
             nodes.Add(node);
             ChainNode n1 = node;
@@ -161,27 +169,32 @@ namespace Videofy.Chain
             pipeout = pipein;
 
             // Task.Run(()=>Parallel.ForEach(nodes, (n) => n.Start()));
-            Task.Run(() => { n1.Start(); });
-            Task.Run(() => { n2.Start(); });
+            Task.Run(() => { n1.Start(); },_tokenSource.Token);
+            Task.Run(() => { n2.Start(); },_tokenSource.Token);
 
             nodes = new List<ChainNode>();
             //HEADER START
             string fileName = "";
             long fileSize = 0;
             DataHeader.FromPipe(ref opt, ref fileName, ref fileSize, pipeout);
-            fileName = System.IO.Path.GetDirectoryName(path) +@"\"+ fileName;
+            fileName = System.IO.Path.GetDirectoryName(path) + @"\" + fileName;
             //HEADER END
 
             pipein = new Pipe(_tokenSource.Token);
             node = new NodeBitsFromBlock(opt, pipeout, pipein);
             nodes.Add(node);
             pipeout = pipein;
-            
+
             pipein = new Pipe(_tokenSource.Token);
             node = new NodeFromBits(pipeout, pipein);
             nodes.Add(node);
             pipeout = pipein;
-            
+            /*
+            pipein = new Pipe(_tokenSource.Token);
+            node = new NodeECCDecoder(pipeout, pipein);
+            nodes.Add(node);
+            pipeout = pipein;
+            */
             pipein = new Pipe(_tokenSource.Token);
             node = new NodeWriter(fileName, fileSize, pipeout, Monitor);
             nodes.Add(node);
@@ -191,10 +204,11 @@ namespace Videofy.Chain
                 {
                     Parallel.ForEach(nodes, (n) => n.Start());
                 }
-            ,_tokenSource.Token);
+            ,
+            _tokenSource.Token);
             Task.Run(() =>
             {
-                while(Monitor.TotalWork != (Monitor.CurrentWork+1))
+                while (Monitor.TotalWork != (Monitor.CurrentWork + 1))
                 {
                     System.Threading.Thread.Sleep(100);
                 }
@@ -202,8 +216,6 @@ namespace Videofy.Chain
                 Monitor.Add(1);
             }
             );
-
         }
-
     }
 }

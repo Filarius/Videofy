@@ -13,7 +13,7 @@ namespace Videofy.Chain
         private BlockingCollection<byte[]> data;
         private Queue<byte> queue;
         //private byte[] buff = null;
-        private int pos;
+        //private int pos;
         private CancellationToken token;
         public CancellationToken Token
         {
@@ -28,7 +28,7 @@ namespace Videofy.Chain
             this.token = token;
             data = new BlockingCollection<byte[]>(new ConcurrentQueue<byte[]>(), 5);
             queue = new Queue<byte>(102400);
-            pos = 0;
+            //pos = 0;
             //buff = new byte[0];                        
         }
 

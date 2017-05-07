@@ -17,7 +17,7 @@ namespace Videofy.Main
         public ConverterState state;
         private Biter _biter;
         private Byter _byter;
-        private Frame _frame;
+        //private Frame _frame;
         private FrameManager _frameManager;
         private String _filePath;
         private FileStream _file;
@@ -28,7 +28,7 @@ namespace Videofy.Main
         private Boolean _isWorking;
         private Boolean _download;
 
-        private BinaryWriter bw;
+        //private BinaryWriter bw;
         public WorkMeter workMeter;
 
         public void Init()

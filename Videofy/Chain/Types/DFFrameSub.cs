@@ -22,10 +22,7 @@ namespace Videofy.Chain.Types
 
         public DFFrameSub(int width, int height)
         {
-            if(width == 320)
-            {
-                int q = 0;
-            }
+           
             _frame = new byte[height * width];
             _handle = GCHandle.Alloc(_frame, GCHandleType.Pinned);
             ptr = _handle.AddrOfPinnedObject();

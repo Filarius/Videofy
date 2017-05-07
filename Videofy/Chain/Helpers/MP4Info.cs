@@ -11,7 +11,7 @@ namespace Videofy.Chain.Helpers
     class MP4Info
     {
       //  private DFffmpeg ffmpeg;
-        private string path;
+        //private string path;
         
 
         public MP4Info()

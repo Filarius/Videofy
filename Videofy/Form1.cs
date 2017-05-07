@@ -69,7 +69,7 @@ namespace Videofy
             //   lblIsWorking.Text = man.state.ToString();
             // lblDone.Text = man.workMeter.GetDonePercent();           
 
-            lblDone.Text = man.Monitor.Percent.ToString();
+            lblDone.Text = man.Monitor.Percent.ToString()+"%";
 
         }
 

@@ -25,12 +25,11 @@ namespace Videofy.Chain
                 Frame = new DFFrame(opts);
                 byte[] temp = Input.Take(Frame.Size);
                 Frame.FromArray(temp);
-                while (!Frame.IsFull)
+                while ((!Frame.IsFull))
                 {
                     temp = Frame.GetBlockArray();
                     Output.Add(temp);
-
-                }                
+                }
                 Frame.Free();
             }
             Output.Complete();

@@ -148,11 +148,13 @@
             // lblIsWorking
             // 
             this.lblIsWorking.AutoSize = true;
+            this.lblIsWorking.Enabled = false;
             this.lblIsWorking.Location = new System.Drawing.Point(177, 33);
             this.lblIsWorking.Name = "lblIsWorking";
             this.lblIsWorking.Size = new System.Drawing.Size(38, 13);
             this.lblIsWorking.TabIndex = 8;
             this.lblIsWorking.Text = "DONE";
+            this.lblIsWorking.Visible = false;
             // 
             // tbURL
             // 

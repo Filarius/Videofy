@@ -39,7 +39,13 @@ namespace Videofy.Chain
             data.CompleteAdding();
         }
 
-        public Boolean IsOpen { get { return !data.IsCompleted; } }
+        public Boolean IsOpen
+        { get
+            {
+                return 
+                    !data.IsCompleted;
+            }
+        }
 
         //take data of any available size
         public byte[] Take()
@@ -97,6 +103,10 @@ namespace Videofy.Chain
                             throw e;
                         }
                     }
+                    catch (OperationCanceledException e)
+                    {                       
+                        data.CompleteAdding();
+                    }
                 }
 
                 if(temp!=null)
@@ -131,7 +141,15 @@ namespace Videofy.Chain
         {
             if (value == null) throw new ArgumentNullException();
             if (value.Length == 0) throw new ArgumentException();
-            data.Add(value,token);
+            try
+            {
+                data.Add(value, token);
+            }
+            catch (OperationCanceledException e)
+            {
+                data.CompleteAdding();
+            }
+            
         }
     }
 }

@@ -190,8 +190,17 @@ namespace Videofy.Chain
             Task.Run(() =>
                 {
                     Parallel.ForEach(nodes, (n) => n.Start());
-                    Monitor.Add(1);
                 }
+            ,_tokenSource.Token);
+            Task.Run(() =>
+            {
+                while(Monitor.TotalWork != (Monitor.CurrentWork+1))
+                {
+                    System.Threading.Thread.Sleep(100);
+                }
+                _tokenSource.Cancel();
+                Monitor.Add(1);
+            }
             );
 
         }

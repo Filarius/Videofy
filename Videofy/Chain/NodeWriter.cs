@@ -61,7 +61,8 @@ namespace Videofy.Chain
                 }
             }
             Monitor.Add(-1);
-            writer.Close();            
+            writer.Close();
+                        
         }
     }
 }

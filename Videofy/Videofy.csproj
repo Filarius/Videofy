@@ -141,6 +141,11 @@
     <Compile Include="Chain\Debug.cs" />
     <Compile Include="Chain\Helpers\DataHeader.cs" />
     <Compile Include="Chain\Helpers\MP4Info.cs" />
+    <Compile Include="Chain\Helpers\ReedSolomon.cs" />
+    <Compile Include="Chain\Helpers\ReedSolomon\GenericGF.cs" />
+    <Compile Include="Chain\Helpers\ReedSolomon\GenericGFPoly.cs" />
+    <Compile Include="Chain\Helpers\ReedSolomon\ReedSolomonDecoder.cs" />
+    <Compile Include="Chain\Helpers\ReedSolomon\ReedSolomonEncoder.cs" />
     <Compile Include="Chain\Helpers\WorkMonitor.cs" />
     <Compile Include="Chain\IPipe.cs" />
     <Compile Include="Chain\NodeBitsFromBlocks.cs" />

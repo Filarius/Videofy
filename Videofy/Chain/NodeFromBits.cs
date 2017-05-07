@@ -2,37 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Videofy.Chain
 {
     class NodeFromBits : ChainNode
     {
-        public NodeFromBits(IPipe input, IPipe output) : base(input, output)
-        {
+        private NodeToken token;
 
+        public NodeFromBits(IPipe input, IPipe output, NodeToken token) : base(input, output)
+        {
+            this.token = token;
         }
 
         public override void Start()
         {
-            //DEBUG
-            int q = 0;
-            //DEBUG
             while ((Input.Count > 0) | (Input.IsOpen))
             {
+                if (token.token)
+                {
+                    break;
+                }
                 byte[] temp = Input.Take(8);
                 if (temp == null)
-                    break;
-
-                //DEBUG
-                int r = Debug.i;
-                if (q > 939200)
-                    if (q % 100 == 0)
-                    {
-             //           Console.WriteLine(q);
-                    }
-                q++;
-                //DEBUG
+                    break;               
 
                 byte cnt = 0;
                 byte tmp = 0;

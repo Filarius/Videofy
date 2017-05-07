@@ -14,9 +14,13 @@ namespace Videofy.Chain
         private DFYoutube youtube;
         private OptionsStruct opt;
         private int frameSize;
-        public NodeFrameFromYoutube(String url, OptionsStruct opt, IPipe Output) : base(null, Output)
+        private NodeToken token;
+
+        public NodeFrameFromYoutube(String url, OptionsStruct opt, IPipe Output, NodeToken token)
+            : base(null, Output)
         {
             this.opt = opt;
+            this.token = token;
             InitFrameSize();
             ffmpeg = new DFffmpeg(GenerateArgsFFmpeg(opt));
             youtube = new DFYoutube(GenerateArgsYoutube(url));
@@ -65,6 +69,11 @@ namespace Videofy.Chain
             byte[] temp;
             while (true)
             {
+                if(token.token)
+                {
+                    break;
+                }
+
                 while ((ffmpeg.Error()) != null)
                 {
                     //   Console.WriteLine(s);

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using OpenCvSharp.CPlusPlus;
 using Videofy.Main;
 using Videofy.Chain.Types;
-
+using System.Threading;
 
 namespace Videofy.Chain
 {
@@ -18,11 +18,12 @@ namespace Videofy.Chain
         private DFFrameBlock block;
         private byte[] blockarray;
         private float[,] dctarray;
+        private NodeToken token;
 
-
-        public NodeBlockBase(OptionsStruct options, IPipe input, IPipe output) : base(input, output)
+        public NodeBlockBase(OptionsStruct options, IPipe input, IPipe output, NodeToken token) : base(input, output)
         {
             this.options = options;
+            this.token = token;
             valueBounds = new int[2];
             snakeIteratorCore = new int[64, 2];
             SnakeIteratorInit();
@@ -355,14 +356,11 @@ namespace Videofy.Chain
             {
                 while ((Input.Count > 0) | (Input.IsOpen)) // pipe have data or not closed
                 {
-                    //DEBUG
-                    if (i > 1878546)
-                        if (i % 1 == 0)
-                        {
-                            //           Console.WriteLine(i);
-                        }
-                    i++;
-                    //DEBUG
+                    if(token.token)
+                    {
+                        break;
+                    }
+
                     PlainTransformBitsFromBlock();
                 }
             }
@@ -371,6 +369,10 @@ namespace Videofy.Chain
                 block = new DFFrameBlock(dctarray);
                 while ((Input.Count > 0) | (Input.IsOpen)) // pipe have data or not closed
                 {
+                    if (token.token)
+                    {
+                        break;
+                    }
                     DCTTransformBitsFromBlock();
                 }
                 block.Free();

@@ -14,17 +14,20 @@ namespace Videofy.Chain
     {
         private CancellationTokenSource _tokenSource;
         public WorkMonitor Monitor;
+        private NodeToken token;
 
         public ChainManager()
         {
             _tokenSource = new CancellationTokenSource();
             Monitor = new WorkMonitor();
+            token = new NodeToken();
         }
 
         public void EncodeFile(string path, OptionsStruct opt)
         {
+            _tokenSource = new CancellationTokenSource();
+            token.token = false;
 
-            
             /*
             OptionsStruct opt = new OptionsStruct(0);
             opt.encodingPreset = EncodingPreset.medium;
@@ -37,6 +40,7 @@ namespace Videofy.Chain
             opt.resolution = ResolutionsEnum.p720;
             */
             Monitor.CurrentWork = 0;
+            
 
             string filename =
                 Path.GetDirectoryName(path) + @"\" +
@@ -52,19 +56,19 @@ namespace Videofy.Chain
             node = new NodeReader(path, pipein, Monitor);
             nodes.Add(node);
             Pipe pipeout = pipein;
-
+            
             pipein = new Pipe(_tokenSource.Token);
             node = new NodeECCEncoder(pipeout, pipein);
             nodes.Add(node);
             pipeout = pipein;
-
+            
             pipein = new Pipe(_tokenSource.Token);
             node = new NodeToBits(pipeout, pipein);
             nodes.Add(node);
             pipeout = pipein;
 
             pipein = new Pipe(_tokenSource.Token);
-            node = new NodeBitsToBlock(opt, pipeout, pipein);
+            node = new NodeBitsToBlock(opt, pipeout, pipein, token);
             nodes.Add(node);
             Pipe pipebody = pipein;
 
@@ -78,7 +82,7 @@ namespace Videofy.Chain
 
             pipeout = pipein;
             pipein = new Pipe(_tokenSource.Token);
-            node = new NodeBitsToBlock(headopt, pipeout, pipein);
+            node = new NodeBitsToBlock(headopt, pipeout, pipein, token);
             Pipe pipeheader = pipein;
             nodes.Add(node);
             //HEADER END
@@ -122,6 +126,8 @@ namespace Videofy.Chain
         private void Decode(string path, string url)
         {
             Monitor.CurrentWork = 0;
+            _tokenSource = new CancellationTokenSource();
+            token.token = false;
             int width;
             if (url == "")
             {
@@ -152,18 +158,18 @@ namespace Videofy.Chain
             */
             if (url == "")
             {
-                node = new NodeFrameFromMP4(path, opt, pipein);
+                node = new NodeFrameFromMP4(path, opt, pipein, token);
             }
             else
             {
-                node = new NodeFrameFromYoutube(url, opt, pipein);
+                node = new NodeFrameFromYoutube(url, opt, pipein, token);
             }
             nodes.Add(node);
             ChainNode n1 = node;
             Pipe pipeout = pipein;
 
             pipein = new Pipe(_tokenSource.Token);
-            node = new NodeBlocksFromFrame(opt, pipeout, pipein);
+            node = new NodeBlocksFromFrame(opt, pipeout, pipein, token);
             ChainNode n2 = node;
             nodes.Add(node);
             pipeout = pipein;
@@ -181,20 +187,20 @@ namespace Videofy.Chain
             //HEADER END
 
             pipein = new Pipe(_tokenSource.Token);
-            node = new NodeBitsFromBlock(opt, pipeout, pipein);
+            node = new NodeBitsFromBlock(opt, pipeout, pipein, token);
             nodes.Add(node);
             pipeout = pipein;
 
             pipein = new Pipe(_tokenSource.Token);
-            node = new NodeFromBits(pipeout, pipein);
+            node = new NodeFromBits(pipeout, pipein, token);
             nodes.Add(node);
             pipeout = pipein;
-            /*
+            
             pipein = new Pipe(_tokenSource.Token);
             node = new NodeECCDecoder(pipeout, pipein);
             nodes.Add(node);
             pipeout = pipein;
-            */
+            
             pipein = new Pipe(_tokenSource.Token);
             node = new NodeWriter(fileName, fileSize, pipeout, Monitor);
             nodes.Add(node);
@@ -204,16 +210,17 @@ namespace Videofy.Chain
                 {
                     Parallel.ForEach(nodes, (n) => n.Start());
                 }
-            ,
-            _tokenSource.Token);
+                , _tokenSource.Token
+                );
             Task.Run(() =>
             {
                 while (Monitor.TotalWork != (Monitor.CurrentWork + 1))
                 {
                     System.Threading.Thread.Sleep(100);
                 }
-                _tokenSource.Cancel();
                 Monitor.Add(1);
+                _tokenSource.Cancel();
+                token.token = true;
             }
             );
         }

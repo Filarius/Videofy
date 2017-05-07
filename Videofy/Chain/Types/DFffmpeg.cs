@@ -101,7 +101,7 @@ namespace Videofy.Chain.Types
                                 break;
                             }
                         }
-                        catch
+                        catch (Exception)
                         {
                             _isRun = false;
                             break;

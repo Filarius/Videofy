@@ -13,9 +13,11 @@ namespace Videofy.Chain
         private  DFffmpeg ffmpeg;
         private OptionsStruct opt;
         private int frameSize;
-        public NodeFrameFromMP4(String path,OptionsStruct opt, IPipe Output):base(null,Output)
+        private NodeToken token;
+        public NodeFrameFromMP4(String path,OptionsStruct opt, IPipe Output,NodeToken token):base(null,Output)
         {
             this.opt = opt;
+            this.token = token;
             InitFrameSize();
             ffmpeg = new DFffmpeg(GenerateArgs(path, opt));            
         }
@@ -52,6 +54,11 @@ namespace Videofy.Chain
             byte[] temp;
             while (true)
             {
+                if(token.token)
+                {
+                    break;
+                }
+
                 while ((s=ffmpeg.ErrorString()) != "")
                 {
                   //   Console.WriteLine(s);

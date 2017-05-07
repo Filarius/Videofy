@@ -163,6 +163,7 @@
     <Compile Include="Chain\NodeMetaHeaderToBlocks.cs" />
     <Compile Include="Chain\NodeReader.cs" />
     <Compile Include="Chain\NodeToBits.cs" />
+    <Compile Include="Chain\NodeToken.cs" />
     <Compile Include="Chain\NodeWriter.cs" />
     <Compile Include="Chain\Pipe.cs" />
     <Compile Include="Chain\PipeJoiner.cs" />

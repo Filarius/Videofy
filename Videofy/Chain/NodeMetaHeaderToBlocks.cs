@@ -30,7 +30,7 @@ namespace Videofy.Chain
             Pipe inp = new Pipe(PipeOut.Token);
             Pipe outp = new Pipe(PipeOut.Token);
             NodeToBits bitNode = new NodeToBits(inp, outp);
-            NodeBitsToBlock blockNode = new NodeBitsToBlock(opt, outp, Output);
+            //NodeBitsToBlock blockNode = new NodeBitsToBlock(opt, outp, Output);
                        
 
         }

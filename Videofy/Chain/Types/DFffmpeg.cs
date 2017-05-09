@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
+//using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,6 +17,28 @@ namespace Videofy.Chain.Types
         private ProcessStartInfo _procInfo;
 
         private BlockingCollection<byte[]> _readQueue, _writeQueue, _errorQueue;
+        public int ReadCount
+        {
+            get
+            {
+                return _readQueue.Count;
+            }
+        }
+        public int WriteCount
+        {
+            get
+            {
+                return _writeQueue.Count;
+            }
+        }
+        public int ErrorCount
+        {
+            get
+            {
+                return _errorQueue.Count;
+            }
+        }
+
         private CancellationTokenSource _cancelToken;
 
         public Boolean IgnoreInput;
@@ -37,9 +59,9 @@ namespace Videofy.Chain.Types
 
             _cancelToken = new CancellationTokenSource();
 
-            _readQueue = new BlockingCollection<byte[]>(2);
-            _writeQueue = new BlockingCollection<byte[]>(2);
-            _errorQueue = new BlockingCollection<byte[]>(2);
+            _readQueue = new BlockingCollection<byte[]>(5);
+            _writeQueue = new BlockingCollection<byte[]>(5);
+            _errorQueue = new BlockingCollection<byte[]>(5);
 
             _procInfo = new ProcessStartInfo("Utils/ffmpeg.exe", args);
             _procInfo.CreateNoWindow = true;
@@ -143,16 +165,18 @@ namespace Videofy.Chain.Types
 
         public void Hatiko()
         {
-            while(_writeQueue.Count >0)
-            {
-                Wait(1000);
-            }
-            try { _proc.StandardInput.BaseStream.Close(); } catch { }
-            while (_isRun)
-            {
-                Wait(1000);
-            }
-            Terminate();
+            (new Thread(() => {
+                while ((_writeQueue.Count > 0) | (_readQueue.Count > 0))
+                {
+                    Wait(1000);
+                }
+                try { _proc.StandardInput.BaseStream.Close(); } catch { }
+                while (_isRun)
+                {
+                    Wait(1000);
+                }
+                Terminate();
+            })).Start();
         }
 
         public void Terminate()

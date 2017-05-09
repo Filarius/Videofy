@@ -143,9 +143,9 @@
             this.lblDone.AutoSize = true;
             this.lblDone.Location = new System.Drawing.Point(174, 1);
             this.lblDone.Name = "lblDone";
-            this.lblDone.Size = new System.Drawing.Size(30, 13);
+            this.lblDone.Size = new System.Drawing.Size(21, 13);
             this.lblDone.TabIndex = 7;
-            this.lblDone.Text = "0.0%";
+            this.lblDone.Text = "0%";
             // 
             // lblIsWorking
             // 

@@ -29,9 +29,11 @@ namespace Videofy.Chain
         private String GenerateArgsYoutube(String url)
         {
             string result = " -O "
+                //+ " --player-external-http-port 12345 "
                 + url
                   + " "
-                + " best";
+                + " best"
+                ;
             return result;
         }
 
@@ -39,8 +41,8 @@ namespace Videofy.Chain
         {
             string result =
                 "-y -i "
-                + "-"
-                  + " "
+                + "- "
+                //    + "http://127.0.0.1:12345 "
                 + "-f image2pipe "
                 + "-pix_fmt "
                   + opt.pxlFmtIn.ToName()
@@ -64,67 +66,65 @@ namespace Videofy.Chain
             Boolean youtubeStillRun;
             String s;
             //debug
-            // int i = 0;
+            int i = 0;
 
             byte[] temp;
+            bool youtubeClosed = false;
             while (true)
             {
-                if(token.token)
+                if (token.token)
                 {
                     break;
                 }
 
-                while ((s=ffmpeg.ErrorString()) != "")
-                {
-                       Console.WriteLine(s);
-                }
-                //while ((ffmpeg.Read()) != null)
-                {
-                    //   Console.WriteLine(s);
-                }
-                while ((s=youtube.ErrorString()) != "")
+                while ((s = ffmpeg.ErrorString()) != "")
                 {
                     Console.WriteLine(s);
                 }
-
-                youtubeStillRun = youtube.IsRunning;
-                temp = youtube.Read();
-                if (temp != null)
+                while ((s = youtube.ErrorString()) != "")
                 {
-                    ffmpeg.Write(temp);
-                }
+                    Console.WriteLine(s);
+                }                               
 
-
-                if (ffmpeg.IsRunning)
+                while (ffmpeg.ReadCount > 0)
                 {
                     temp = ffmpeg.Read();
-                    if (temp == null)
+                    if (temp != null)
                     {
-                        continue;
+                        Output.Add(temp);
                     }
                 }
-                else
-                {
-                    temp = ffmpeg.Read();
-                    if (temp == null)
-                        if (youtubeStillRun) //be sure there was no more data 
-                                             //from youtube after last request                       
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            break;
-                        }
 
+                while ((youtube.ReadCount > 0) & (ffmpeg.WriteCount < 2))
+                {
+                    temp = youtube.Read();
+                    if (temp != null)
+                    {
+                        ffmpeg.Write(temp);
+                    }
+                //    i += temp.Length;
+                //    Console.WriteLine(i);
                 }
 
-                Output.Add(temp);
+                if ((!youtubeClosed)
+                    &(!youtube.IsRunning)
+                    &(youtube.ReadCount==0)
+                    &ffmpeg.WriteCount==0
+                    &ffmpeg.ReadCount==0)
+                {
+                    ffmpeg.Hatiko();
+                    youtubeClosed = true;
+                }
+
+                if (youtubeClosed & (!ffmpeg.IsRunning)&(ffmpeg.ReadCount==0))
+                {
+                    break;
+                }
             }
             //debug
 
             Output.Complete();
-            ffmpeg.Terminate();
+            
             youtube.Terminate();
         }
 

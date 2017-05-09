@@ -22,6 +22,27 @@ namespace Videofy.Chain.Types
         public Boolean IgnoreInput;
         private Thread _tread, _twrite, _terror;
         private Object rLocker, wLocker, eLocker;
+        public int ReadCount
+        {
+            get
+            {
+                return _readQueue.Count;
+            }
+        }
+        public int WriteCount
+        {
+            get
+            {
+                return _writeQueue.Count;
+            }
+        }
+        public int ErrorCount
+        {
+            get
+            {
+                return _errorQueue.Count;
+            }
+        }
         private bool _isRun;
         //private int _charBlock = 1024000 / sizeof(char);
         private int _byteBlock = 1024000;
@@ -37,11 +58,13 @@ namespace Videofy.Chain.Types
 
             _cancelToken = new CancellationTokenSource();
 
-            _readQueue = new BlockingCollection<byte[]>(2);
-            _writeQueue = new BlockingCollection<byte[]>(2);
-            _errorQueue = new BlockingCollection<byte[]>(2);
+            _readQueue = new BlockingCollection<byte[]>(5);
+            _writeQueue = new BlockingCollection<byte[]>(5);
+            _errorQueue = new BlockingCollection<byte[]>(5);
 
             _procInfo = new ProcessStartInfo(@"Utils\livestreamer\livestreamer.exe", args);
+            //_procInfo = new ProcessStartInfo(@"Utils\livestreame", args);
+            
             _procInfo.CreateNoWindow = true;
             _procInfo.UseShellExecute = false;
             _procInfo.RedirectStandardError = true;

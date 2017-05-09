@@ -224,5 +224,11 @@ namespace Videofy.Chain
             }
             );
         }
+
+        public void Cancel()
+        {
+            _tokenSource.Cancel();
+            token.token=true;
+        }
     }
 }

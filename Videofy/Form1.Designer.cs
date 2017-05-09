@@ -104,16 +104,18 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(103, -1);
+            this.label1.Enabled = false;
+            this.label1.Location = new System.Drawing.Point(420, 49);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(59, 13);
             this.label1.TabIndex = 3;
             this.label1.Text = "Value shift:";
+            this.label1.Visible = false;
             // 
             // lblError
             // 
             this.lblError.AutoSize = true;
-            this.lblError.Location = new System.Drawing.Point(177, -1);
+            this.lblError.Location = new System.Drawing.Point(476, 49);
             this.lblError.Name = "lblError";
             this.lblError.Size = new System.Drawing.Size(13, 13);
             this.lblError.TabIndex = 4;
@@ -130,7 +132,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(103, 16);
+            this.label2.Location = new System.Drawing.Point(100, 1);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(60, 13);
             this.label2.TabIndex = 6;
@@ -139,7 +141,7 @@
             // lblDone
             // 
             this.lblDone.AutoSize = true;
-            this.lblDone.Location = new System.Drawing.Point(177, 16);
+            this.lblDone.Location = new System.Drawing.Point(174, 1);
             this.lblDone.Name = "lblDone";
             this.lblDone.Size = new System.Drawing.Size(30, 13);
             this.lblDone.TabIndex = 7;
@@ -149,7 +151,7 @@
             // 
             this.lblIsWorking.AutoSize = true;
             this.lblIsWorking.Enabled = false;
-            this.lblIsWorking.Location = new System.Drawing.Point(177, 33);
+            this.lblIsWorking.Location = new System.Drawing.Point(420, 62);
             this.lblIsWorking.Name = "lblIsWorking";
             this.lblIsWorking.Size = new System.Drawing.Size(38, 13);
             this.lblIsWorking.TabIndex = 8;
@@ -184,7 +186,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(332, 1);
+            this.button4.Location = new System.Drawing.Point(330, -1);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(19, 22);
             this.button4.TabIndex = 4;
@@ -196,7 +198,7 @@
             // 
             this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox2.Image = global::Videofy.Properties.Resources.patreon;
-            this.pictureBox2.Location = new System.Drawing.Point(238, 1);
+            this.pictureBox2.Location = new System.Drawing.Point(355, 1);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(88, 45);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -342,22 +344,26 @@
             // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(357, -1);
+            this.button9.Enabled = false;
+            this.button9.Location = new System.Drawing.Point(439, -1);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(75, 23);
             this.button9.TabIndex = 26;
             this.button9.Text = "11111";
             this.button9.UseVisualStyleBackColor = true;
+            this.button9.Visible = false;
             this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
             // button10
             // 
-            this.button10.Location = new System.Drawing.Point(357, 23);
+            this.button10.Enabled = false;
+            this.button10.Location = new System.Drawing.Point(439, 23);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(75, 23);
             this.button10.TabIndex = 27;
             this.button10.Text = "222222";
             this.button10.UseVisualStyleBackColor = true;
+            this.button10.Visible = false;
             this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
             // rbBitrate
@@ -365,10 +371,10 @@
             this.rbBitrate.AutoSize = true;
             this.rbBitrate.Location = new System.Drawing.Point(341, 82);
             this.rbBitrate.Name = "rbBitrate";
-            this.rbBitrate.Size = new System.Drawing.Size(100, 17);
+            this.rbBitrate.Size = new System.Drawing.Size(98, 17);
             this.rbBitrate.TabIndex = 28;
             this.rbBitrate.TabStop = true;
-            this.rbBitrate.Text = "Constant Bitrate";
+            this.rbBitrate.Text = "Average Bitrate";
             this.rbBitrate.UseVisualStyleBackColor = true;
             this.rbBitrate.CheckedChanged += new System.EventHandler(this.rbBitrate_CheckedChanged);
             // 
@@ -397,7 +403,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(504, 144);
+            this.ClientSize = new System.Drawing.Size(446, 137);
             this.Controls.Add(this.tbQuality);
             this.Controls.Add(this.rbQuality);
             this.Controls.Add(this.rbBitrate);

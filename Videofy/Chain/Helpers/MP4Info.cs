@@ -59,6 +59,11 @@ namespace Videofy.Chain.Helpers
             l = s.IndexOf("x", l) + 1;
             int r = s.IndexOf(",", l);
             s = s.Substring(l,r-l);
+            r = s.IndexOf(" ");
+            if (r > 0)
+            {
+                s = s.Substring(0, r);
+            }
             return int.Parse(s);
         }
 
@@ -78,19 +83,29 @@ namespace Videofy.Chain.Helpers
                     s += temp;
                     continue;
                 }
-                else if ((s.Length > 0) & (!youtube.IsRunning))
+                else
                 {
-                    break;
-                }
+                    temp = youtube.ErrorString();
+                    if (temp != "")
+                    {
+                        s += temp;
+                        continue;
+                    }
+                    else if ((s.Length > 0) & (!youtube.IsRunning))
+                    {
+                        break;
+                    }
+                }                
+                
 
             }
             youtube.Terminate();
 
             int p = s.IndexOf("(best)");
-            if (p == 0) throw new Exception("WIDTH SEARCH ERROR");
+            if (p <= 0) throw new Exception("WIDTH SEARCH ERROR");
             int r, l;
             r = 0;
-            while((l=s.IndexOf(",",r+1))<p)
+            while(((l=s.IndexOf(",",r+1))!=-1)&(l<p))
             {
                 r = l;
             }

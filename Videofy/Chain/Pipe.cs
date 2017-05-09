@@ -106,6 +106,11 @@ namespace Videofy.Chain
                     catch (OperationCanceledException e)
                     {                       
                         data.CompleteAdding();
+                        while(data.Count>0)
+                        {
+                            data.Take();
+                        }
+
                     }
                 }
 

@@ -111,7 +111,10 @@ namespace Videofy
         {
             DialogResult dr = saveFileDialog1.ShowDialog();
             if (dr != DialogResult.OK) { return; }
-          //  man = new Converter(saveFileDialog1.FileName, tbURL.Text);
+            man = new Chain.ChainManager();
+            man.DecodeUrl(saveFileDialog1.FileName, tbURL.Text);
+
+           // man = new Converter(saveFileDialog1.FileName, tbURL.Text);
             timer1.Enabled = true;
             //var dl = new Converter(saveFileDialog1.FileName, tbURL.Text);
           //  man.Unpack();
@@ -231,18 +234,22 @@ namespace Videofy
 
         private void button9_Click(object sender, EventArgs e)
         {
+            /*
             DialogResult dr = openFileDialog1.ShowDialog();
             if (dr != DialogResult.OK) { return; }
             var man = new Chain.ChainManager();
             man.EncodeFile(openFileDialog1.FileName,options.props);
+            */
         }
 
         private void button10_Click(object sender, EventArgs e)
         {
+            /*
             DialogResult dr = saveFileDialog1.ShowDialog();
             if (dr != DialogResult.OK) { return; }
             var man = new Chain.ChainManager();
             man.DecodeFile(saveFileDialog1.FileName);
+            */
         }
 
         private void cbCellCount_SelectedIndexChanged(object sender, EventArgs e)

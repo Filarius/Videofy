@@ -74,17 +74,17 @@ namespace Videofy.Chain
                     break;
                 }
 
-                while ((ffmpeg.Error()) != null)
+                while ((s=ffmpeg.ErrorString()) != "")
+                {
+                       Console.WriteLine(s);
+                }
+                //while ((ffmpeg.Read()) != null)
                 {
                     //   Console.WriteLine(s);
                 }
-                while ((ffmpeg.Read()) != null)
+                while ((s=youtube.ErrorString()) != "")
                 {
-                    //   Console.WriteLine(s);
-                }
-                while (youtube.Error() != null)
-                {
-
+                    Console.WriteLine(s);
                 }
 
                 youtubeStillRun = youtube.IsRunning;

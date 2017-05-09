@@ -169,7 +169,7 @@ namespace Videofy.Main
         public void PopulateCellCount(ComboBox cb)
         {
             cb.Items.Clear();
-            for (byte i = 1; i < 65; i++)
+            for (byte i = 1; i < 16; i++)
             {
                 cb.Items.Add(i.ToString());
                 if (props.cellCount == i)
@@ -285,11 +285,11 @@ namespace Videofy.Main
             switch (index)
             {
                 case 0: props.resolution = ResolutionsEnum.p144; break;
-                case 1: props.resolution = ResolutionsEnum.p240; break;
-                case 2: props.resolution = ResolutionsEnum.p360; break;
-                case 3: props.resolution = ResolutionsEnum.p480; break;
+             //   case 1: props.resolution = ResolutionsEnum.p240; break;
+             //   case 2: props.resolution = ResolutionsEnum.p360; break;
+             //   case 3: props.resolution = ResolutionsEnum.p480; break;
                 case 4: props.resolution = ResolutionsEnum.p720; break;
-                case 5: props.resolution = ResolutionsEnum.p1080; break;
+           //     case 5: props.resolution = ResolutionsEnum.p1080; break;
                 case 6: props.resolution = ResolutionsEnum.p1440; break;
                 case 7: props.resolution = ResolutionsEnum.p2160; break;
             }

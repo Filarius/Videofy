@@ -123,6 +123,8 @@ Its encode given file into MP4, and decode it back without changes.
 You also can upload file to Youtube, and its still can be decoded.
 In another cases after re-encoding file still can be decoded, 
 but there can be some errors on worser settings.
-Please read README.txt for more info</value>
+Please read README.txt for more info
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND</value>
   </data>
 </root>

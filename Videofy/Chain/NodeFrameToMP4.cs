@@ -79,11 +79,11 @@ namespace Videofy.Chain
                 String s;
                 while ((s = ffmpeg.ErrorString()) != "")
                 {
-                //    Console.Write(s);
+                    Console.Write(s);
                 }
                 while ((s = ffmpeg.ReadString()) != "")
                 {
-                 //   Console.Write(s);
+                   Console.Write(s);
                 }                
             }
             /*

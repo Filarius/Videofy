@@ -289,7 +289,18 @@ namespace Videofy.Chain
 
             byte[] ar = new byte[64];
             DFFrameBlock blok = new DFFrameBlock(ar);
-            Mat mat = block.Body.Idct();
+            Mat mat = null;
+            try
+            {
+                mat = block.Body.Idct();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("ERROR RROROR RORORORO ROROROR");
+               mat = block.Body.Idct();
+            }
+            
+            
             mat.ConvertTo(blok.Body, MatType.CV_8U);
             mat.Dispose();
             Output.Add(blok.ToArray());

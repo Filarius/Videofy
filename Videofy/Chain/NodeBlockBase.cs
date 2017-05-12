@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OpenCvSharp.CPlusPlus;
+using OpenCvSharp;
 using Videofy.Main;
 using Videofy.Chain.Types;
 using System.Threading;
@@ -287,29 +287,51 @@ namespace Videofy.Chain
                 SnakeArraySet(dctarray, i, 0);
             }
 
+            
             byte[] ar = new byte[64];
             DFFrameBlock blok = new DFFrameBlock(ar);
-            Mat mat = null;
-            try
-            {
-                mat = block.Body.Idct();
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("ERROR RROROR RORORORO ROROROR");
-               mat = block.Body.Idct();
-            }
             
+            Mat mat = null;
+
+            mat = block.Body.Idct();
             
             mat.ConvertTo(blok.Body, MatType.CV_8U);
             mat.Dispose();
+            
+
             Output.Add(blok.ToArray());
             blok.Free();
+            
+            /*
+            int k = 0;
+            var result = new byte[64];
+            var resuld2d = new float[8, 8];
+            resuld2d = IDCT2D(dctarray);
+            for(int x=0;x<8;x++)
+            {
+                for (int y = 0; y < 8; y++)
+                {
+                    float z = resuld2d[x, y];
+                    if (z<0)
+                    {
+                        z = 0;
+                    }
+                    else if (z > 255)
+                    {
+                        z = 255;
+                    }
+                    result[k++] = (byte)z;
+                }
+            }
+            Output.Add(result);
+            */
+
         }
 
         private void DCTTransformBitsFromBlock()
         {
             byte[] temp = Input.Take(64);
+            
             DFFrameBlock blok = new DFFrameBlock(temp);
             Mat mat = new Mat();
             blok.Body.ConvertTo(mat, MatType.CV_32FC1);
@@ -321,12 +343,32 @@ namespace Videofy.Chain
             }
             mat.Dispose();
             blok.Free();
+            
+            /*
+            var data = new float[8, 8];
+            int k = 0;
+            for (int x = 0; x < 8; x++)
+            {
+                for (int y = 0; y < 8; y++)
+                {
+                    data[x, y] = temp[k++];
+                }
+            }
+            var dct = DCT2D(data);
+            var result1d = new float[64];
+            k = 0;                
+            for (int i = 1; i < options.cellCount + 1; i++)
+            {
+                Output.Add(BitsFromCell(SnakeArrayGet(dct, i)));
+            }
+            */
+
         }
 
         protected void StartBitsToBlock()
         {
             //DEBUG
-            int cnt = 0;
+            int cnt =1;
             if (options.density == 1)
             {
                 int a = 89;
@@ -347,7 +389,7 @@ namespace Videofy.Chain
             }
             else
             {
-                
+
                 block = new DFFrameBlock(dctarray);
                 while ((Input.Count > 0) | (Input.IsOpen)) // pipe have data or not closed
                 {
@@ -367,7 +409,7 @@ namespace Videofy.Chain
             {
                 while ((Input.Count > 0) | (Input.IsOpen)) // pipe have data or not closed
                 {
-                    if(token.token)
+                    if (token.token)
                     {
                         break;
                     }
@@ -392,6 +434,69 @@ namespace Videofy.Chain
             //Console.WriteLine(Debug.i.ToString());
         }
 
+        public float[,] DCT2D(float[,] input)
+        {
+            float[,] coeffs = new float[8, 8];
+            for (int u = 0; u < 8; u++)
+            {
+                for (int v = 0; v < 8; v++)
+                {
+                    double sum = 0d;
+                    for (int x = 0; x < 8; x++)
+                    {
+                        for (int y = 0; y < 8; y++)
+                        {
+                            double a = input[x, y];
+                            sum += BasisFunction(a, u, v, x, y);
+                        }
+                    }
+                    coeffs[u, v] = (float)(sum * beta * alpha(u) * alpha(v));
+                }
+            }
+            return coeffs;
+        }
+
+        public float[,] IDCT2D(float[,] coeffs)
+        {
+            float[,] output = new float[8, 8];
+            for (int x = 0; x < 8; x++)
+            {
+                for (int y = 0; y < 8; y++)
+                {
+                    double sum = 0d;
+
+                    for (int u = 0; u < 8; u++)
+                    {
+                        for (int v = 0; v < 8; v++)
+                        {
+                            double a = coeffs[u, v];
+                            sum += BasisFunction(a, u, v, x, y) * alpha(u) * alpha(v);
+                        }
+                    }
+                    output[x, y] = (float)(sum * beta);
+                }
+            }
+            return output;
+        }
+
+        public double BasisFunction(double a, double u, double v, double x, double y)
+        {
+            double b = Math.Cos(((2d * x + 1d) * u * Math.PI) / (2 * 8));
+            double c = Math.Cos(((2d * y + 1d) * v * Math.PI) / (2 * 8));
+            return a * b * c;
+        }
+
+        private double alpha(int u)
+        {
+            if (u == 0)
+                return 1 / Math.Sqrt(2);
+            return 1;
+        }
+
+        private double beta
+        {
+            get { return (1d / 4); }
+        }
 
 
     }

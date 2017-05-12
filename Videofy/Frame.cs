@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Videofy.Settings;
-using OpenCvSharp.CPlusPlus;
+using OpenCvSharp;
 using System.Runtime.InteropServices;
 
 namespace Videofy.Tools
@@ -224,7 +224,7 @@ namespace Videofy.Tools
 
                 Mat mat, mat2;
 
-                var rType = OpenCvSharp.Interpolation.Area;
+                var rType = OpenCvSharp.InterpolationFlags.Area;
                 {
                     GCHandle hframe = GCHandle.Alloc(_frame, GCHandleType.Pinned);
                     IntPtr iframe = hframe.AddrOfPinnedObject();
@@ -232,6 +232,7 @@ namespace Videofy.Tools
                     mat = new Mat
                         (h, w, MatType.CV_8UC1, iframe);
                     mat2 = new Mat();
+                    
                     mat2 = mat.Resize(new Size(ws, hs), 0, 0, rType);
                     Marshal.Copy(mat2.Data, tmp, 0, ws * hs);
 

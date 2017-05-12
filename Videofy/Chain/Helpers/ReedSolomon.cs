@@ -14,7 +14,7 @@ namespace Videofy.Chain.Helpers
         private ReedSolomonDecoder decoder;
 
         public ReedSolomon()
-        {
+        {           
             field = GenericGF.DATA_MATRIX_FIELD_256;
             encoder = new ReedSolomonEncoder(field);
             decoder = new ReedSolomonDecoder(field);

@@ -12,9 +12,11 @@ namespace Videofy.Chain
     {
         private FileStream reader;
         private WorkMonitor Monitor;
+        private NodeToken token;
 
-        public NodeReader(string path,IPipe output,WorkMonitor Monitor) : base(null,output/*,null*/)
+        public NodeReader(string path,IPipe output,WorkMonitor Monitor,NodeToken token) : base(null,output/*,null*/)
         {
+            this.token = token;
             if (!File.Exists(path)) throw new Exception("File does not exists: " + path);            
             reader = new FileStream(path,FileMode.Open);            
             var fi = new FileInfo(path);
@@ -29,6 +31,8 @@ namespace Videofy.Chain
             int i;
             while((i = reader.Read(buf,0,10240)) > 0)
             {
+                if(token.token)
+                { break; }
                 //cnt += i;
                 //Console.WriteLine("Nodereader " + cnt.ToString());
                 byte[] temp = new byte[i];

@@ -12,19 +12,25 @@ namespace Videofy.Chain
     {
         private DFFrame Frame;
         private OptionsStruct opts;
+        NodeToken token;
 
-        public NodeBlocksToFrame(OptionsStruct opts, IPipe input, IPipe output) : base(input, output)
+        public NodeBlocksToFrame(OptionsStruct opts, IPipe input, IPipe output,NodeToken token) : base(input, output)
         {
-            this.opts = opts;            
+            this.opts = opts;
+            this.token = token;
         }
 
         public override void Start()
         {
             while ((Input.IsOpen) | (Input.Count > 0))
             {
+                if (token.token)
+                { break; }
                 Frame = new DFFrame(opts);
                 while (!Frame.IsFull)
                 {
+                    if (token.token)
+                    { break; }
                     byte[] temp = Input.Take(64);
                     Frame.SetBlockArray(temp);
                 }

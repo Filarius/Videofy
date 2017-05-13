@@ -63,6 +63,7 @@
             this.rbBitrate = new System.Windows.Forms.RadioButton();
             this.rbQuality = new System.Windows.Forms.RadioButton();
             this.tbQuality = new System.Windows.Forms.TextBox();
+            this.btCancel = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -399,11 +400,22 @@
             this.tbQuality.Text = "10000000";
             this.tbQuality.TextChanged += new System.EventHandler(this.tbQuality_TextChanged);
             // 
+            // btCancel
+            // 
+            this.btCancel.Location = new System.Drawing.Point(103, 31);
+            this.btCancel.Name = "btCancel";
+            this.btCancel.Size = new System.Drawing.Size(87, 26);
+            this.btCancel.TabIndex = 31;
+            this.btCancel.Text = "Cancel";
+            this.btCancel.UseVisualStyleBackColor = true;
+            this.btCancel.Click += new System.EventHandler(this.btCancel_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(446, 137);
+            this.Controls.Add(this.btCancel);
             this.Controls.Add(this.tbQuality);
             this.Controls.Add(this.rbQuality);
             this.Controls.Add(this.rbBitrate);
@@ -483,6 +495,7 @@
         private System.Windows.Forms.RadioButton rbBitrate;
         private System.Windows.Forms.RadioButton rbQuality;
         private System.Windows.Forms.TextBox tbQuality;
+        private System.Windows.Forms.Button btCancel;
     }
 }
 

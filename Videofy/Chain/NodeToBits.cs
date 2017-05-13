@@ -8,10 +8,10 @@ namespace Videofy.Chain
 {
     class NodeToBits : ChainNode
     {
-
-        public NodeToBits(IPipe input, IPipe output) : base(input, output)
+        private NodeToken token;
+        public NodeToBits(IPipe input, IPipe output,NodeToken token) : base(input, output)
         {
-
+            this.token = token;
         }
 
         public override void Start()
@@ -22,7 +22,10 @@ namespace Videofy.Chain
             //debug
             while (true)
             {
-                
+                if(token.token)
+                {
+                    break;
+                }
                 byte[] temp = Input.Take();
                 if (temp == null)
                     break;

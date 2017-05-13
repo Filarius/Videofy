@@ -10,9 +10,11 @@ namespace Videofy.Chain
     class NodeECCEncoder : ChainNode
     {
         private ReedSolomon ecc;
+        private NodeToken token;
 
-        public NodeECCEncoder(IPipe Input, IPipe Output):base(Input,Output)
+        public NodeECCEncoder(IPipe Input, IPipe Output, NodeToken token):base(Input,Output)
         {
+            this.token = token;
             ecc = new ReedSolomon();
         }
 
@@ -20,6 +22,8 @@ namespace Videofy.Chain
         {
             while(Input.IsOpen | (Input.Count > 0))
             {
+                if(token.token)
+                { break; }
                 byte[] temp = Input.Take(256-100);
                 temp = ecc.Encode(temp, 100);
                 Output.Add(temp);

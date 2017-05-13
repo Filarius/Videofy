@@ -13,11 +13,13 @@ namespace Videofy.Chain
         private FileStream writer;
         private long size;
         private WorkMonitor Monitor;
+        private NodeToken token;
 
-        public NodeWriter(string path,long size, IPipe input,WorkMonitor Monitor) : base(input,null)
+        public NodeWriter(string path,long size, IPipe input,WorkMonitor Monitor,NodeToken token) : base(input,null)
         {
             //if (!File.Exists(path)) throw new Exception("File does not exists: " + path);
             this.size = size;
+            this.token = token;
             if(File.Exists(path))
             {
                 string temp = Path.GetDirectoryName(path)
@@ -44,6 +46,8 @@ namespace Videofy.Chain
             long pos = 0;
             while(true)
             {
+                if(token.token)
+                { break; }
                 byte[] temp = Input.Take();
                 if (temp == null)
                     break;

@@ -31,6 +31,10 @@ namespace Videofy
         {
             DialogResult dr = openFileDialog1.ShowDialog();
             if (dr != DialogResult.OK) { return; }
+            if(man!=null)
+            {
+                man.Cancel();
+            }
             man = new Chain.ChainManager();
             man.EncodeFile(openFileDialog1.FileName,options.props);
 
@@ -77,6 +81,10 @@ namespace Videofy
         {
             DialogResult dr = openFileDialog2.ShowDialog();
             if (dr != DialogResult.OK) { return; }
+            if (man != null)
+            {
+                man.Cancel();
+            }
             man = new Chain.ChainManager();
             man.DecodeFile(openFileDialog2.FileName);
 
@@ -111,6 +119,10 @@ namespace Videofy
         {
             DialogResult dr = saveFileDialog1.ShowDialog();
             if (dr != DialogResult.OK) { return; }
+            if (man != null)
+            {
+                man.Cancel();
+            }
             man = new Chain.ChainManager();
             man.DecodeUrl(saveFileDialog1.FileName, tbURL.Text);
 
@@ -321,6 +333,14 @@ namespace Videofy
                
             }
                         
+        }
+
+        private void btCancel_Click(object sender, EventArgs e)
+        {
+            if (man != null)
+            {
+                man.Cancel();
+            }
         }
     }
 }

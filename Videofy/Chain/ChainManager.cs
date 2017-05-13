@@ -53,17 +53,17 @@ namespace Videofy.Chain
             List<ChainNode> nodes = new List<ChainNode>();
             Pipe pipein = new Pipe(_tokenSource.Token);
             ChainNode node;
-            node = new NodeReader(path, pipein, Monitor);
+            node = new NodeReader(path, pipein, Monitor, token);
             nodes.Add(node);
             Pipe pipeout = pipein;
             
             pipein = new Pipe(_tokenSource.Token);
-            node = new NodeECCEncoder(pipeout, pipein);
+            node = new NodeECCEncoder(pipeout, pipein,token);
             nodes.Add(node);
             pipeout = pipein;
             
             pipein = new Pipe(_tokenSource.Token);
-            node = new NodeToBits(pipeout, pipein);
+            node = new NodeToBits(pipeout, pipein, token);
             nodes.Add(node);
             pipeout = pipein;
 
@@ -77,7 +77,7 @@ namespace Videofy.Chain
             DataHeader.ToPipe(path, opt, pipein);
             pipeout = pipein;
             pipein = new Pipe(_tokenSource.Token);
-            node = new NodeToBits(pipeout, pipein);
+            node = new NodeToBits(pipeout, pipein, token);
             nodes.Add(node);
 
             pipeout = pipein;
@@ -93,12 +93,12 @@ namespace Videofy.Chain
             IPipe pipejoiner = new PipeJoiner(_tokenSource.Token, plist);
 
             pipein = new Pipe(_tokenSource.Token);
-            node = new NodeBlocksToFrame(opt, pipejoiner, pipein);
+            node = new NodeBlocksToFrame(opt, pipejoiner, pipein, token);
             nodes.Add(node);
             pipeout = pipein;
 
             pipein = new Pipe(_tokenSource.Token);
-            node = new NodeFrameToMP4(filename, opt, pipeout);
+            node = new NodeFrameToMP4(filename, opt, pipeout, token);
             //node = new NodeDebugRawStorage(pipeout, null);
             nodes.Add(node);
 
@@ -202,7 +202,7 @@ namespace Videofy.Chain
             pipeout = pipein;
             
             pipein = new Pipe(_tokenSource.Token);
-            node = new NodeWriter(fileName, fileSize, pipeout, Monitor);
+            node = new NodeWriter(fileName, fileSize, pipeout, Monitor, token);
             nodes.Add(node);
 
 

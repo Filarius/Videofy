@@ -29,5 +29,11 @@ namespace Videofy.Chain.Helpers
         {
             CurrentWork += inc;
         }
+
+        public void Reset()
+        {
+            TotalWork = 0;
+            CurrentWork = 0;
+        }
     }
 }

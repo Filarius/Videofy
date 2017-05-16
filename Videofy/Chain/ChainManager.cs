@@ -23,7 +23,7 @@ namespace Videofy.Chain
             token = new NodeToken();
         }
 
-        public void EncodeFile(string path, OptionsStruct opt)
+        public void EncodeFile(string path, string saveTo, OptionsStruct opt)
         {
             _tokenSource = new CancellationTokenSource();
             token.token = false;
@@ -39,11 +39,11 @@ namespace Videofy.Chain
             opt.pxlFmtOut = PixelFormat.YUV420P;
             opt.resolution = ResolutionsEnum.p720;
             */
-            Monitor.CurrentWork = 0;
-            
+
+            Monitor.CurrentWork = 0;            
 
             string filename =
-                Path.GetDirectoryName(path) + @"\" +
+                Path.GetDirectoryName(saveTo) + @"\" +
                 Path.GetFileName(path) + @".mp4";
 
             OptionsStruct headopt = opt;
@@ -113,17 +113,17 @@ namespace Videofy.Chain
 
         }
 
-        public void DecodeFile(string path)
+        public void DecodeFile(string path, string saveTo)
         {
-            Decode(path, "");
+            Decode(path, saveTo, "");
         }
 
         public void DecodeUrl(string path, string url)
         {
-            Decode(path, url);
+            Decode(path, "", url);
         }
 
-        private void Decode(string path, string url)
+        private void Decode(string path, string saveTo, string url)
         {
             Monitor.CurrentWork = 0;
             _tokenSource = new CancellationTokenSource();
@@ -183,7 +183,7 @@ namespace Videofy.Chain
             string fileName = "";
             long fileSize = 0;
             DataHeader.FromPipe(ref opt, ref fileName, ref fileSize, pipeout);
-            fileName = System.IO.Path.GetDirectoryName(path) + @"\" + fileName;
+            fileName = System.IO.Path.GetDirectoryName(saveTo) + @"\" + fileName;
             //HEADER END
 
             pipein = new Pipe(_tokenSource.Token);
@@ -228,7 +228,8 @@ namespace Videofy.Chain
         public void Cancel()
         {
             _tokenSource.Cancel();
-            token.token=true;
+            token.token = true;
+            Monitor.Reset();
         }
     }
 }

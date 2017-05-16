@@ -29,14 +29,19 @@ namespace Videofy
 
         private void button1_Click(object sender, EventArgs e)
         {
-            DialogResult dr = openFileDialog1.ShowDialog();
-            if (dr != DialogResult.OK) { return; }
-            if(man!=null)
+            if (man != null)
             {
                 man.Cancel();
             }
+
+            DialogResult dr;
+            dr = openFileDialog1.ShowDialog();
+            if (dr != DialogResult.OK) { return; }
+            dr = saveFileDialog1.ShowDialog();
+            if (dr != DialogResult.OK) { return; }
+            
             man = new Chain.ChainManager();
-            man.EncodeFile(openFileDialog1.FileName,options.props);
+            man.EncodeFile(openFileDialog1.FileName, saveFileDialog1.FileName, options.props);
 
             timer1.Enabled = true;
             /*
@@ -79,14 +84,17 @@ namespace Videofy
 
         private void button2_Click(object sender, EventArgs e)
         {
-            DialogResult dr = openFileDialog2.ShowDialog();
-            if (dr != DialogResult.OK) { return; }
             if (man != null)
             {
                 man.Cancel();
             }
+            DialogResult dr = openFileDialog2.ShowDialog();
+            if (dr != DialogResult.OK) { return; }
+            dr = saveFileDialog1.ShowDialog();
+            if (dr != DialogResult.OK) { return; }
+            
             man = new Chain.ChainManager();
-            man.DecodeFile(openFileDialog2.FileName);
+            man.DecodeFile(openFileDialog2.FileName,saveFileDialog1.FileName);
 
             timer1.Enabled = true;
             /*
@@ -107,7 +115,10 @@ namespace Videofy
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-
+            if(man != null)
+            {
+                man.Cancel();
+            }
         }
       
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -207,11 +218,17 @@ namespace Videofy
             options.Resolution = ((ComboBox)sender).GetItemText(((ComboBox)sender).SelectedItem);
         }
 
-        private void cbDestiny_SelectedIndexChanged(object sender, EventArgs e)
-        {
+        private void cbDestiny_SelectedIndexChanged(object sender, EventArgs e)        {          
+            
             if (options == null) return;
+            
             //options.SetDensity(((ComboBox)sender).SelectedIndex);
             options.Density = ((ComboBox)sender).GetItemText(((ComboBox)sender).SelectedItem);
+
+            if ((cbCellCount.SelectedIndex != 0) & (cbDensity.SelectedIndex != 0) & cbCellCount.Items.Count != 0)
+            {
+                cbCellCount.SelectedIndex = 0;
+            }
         }
 
         private void cbInputFormat_SelectedIndexChanged(object sender, EventArgs e)
@@ -265,13 +282,17 @@ namespace Videofy
         }
 
         private void cbCellCount_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (options == null) return;
+        {            
+            if (options == null) return;            
             options.CellCount = ((ComboBox)sender).GetItemText(((ComboBox)sender).SelectedItem);
+            if ((cbCellCount.SelectedIndex != 0) & (cbDensity.SelectedIndex != 0)&(cbDensity.Items.Count!=0))
+            {
+                cbDensity.SelectedIndex = 0;
+            }
         }
 
         private void cbPreset_SelectedIndexChanged(object sender, EventArgs e)
-        {
+        {            
             if (options == null) return;
             options.EncodingPreset = ((ComboBox)sender).GetItemText(((ComboBox)sender).SelectedItem);
         }

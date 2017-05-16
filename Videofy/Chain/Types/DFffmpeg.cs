@@ -168,12 +168,12 @@ namespace Videofy.Chain.Types
             (new Thread(() => {
                 while ((_writeQueue.Count > 0) | (_readQueue.Count > 0))
                 {
-                    Wait(1000);
+                    Wait(500);
                 }
                 try { _proc.StandardInput.BaseStream.Close(); } catch { }
                 while (_isRun)
                 {
-                    Wait(1000);
+                    Wait(500);
                 }
                 Terminate();
             })).Start();

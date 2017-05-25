@@ -24,7 +24,7 @@ namespace Videofy.Chain
             {
                 if(token.token)
                 { break; }
-                byte[] temp = Input.Take(256-100);
+                byte[] temp = Input.Take(150);
                 temp = ecc.Encode(temp, 100);
                 Output.Add(temp);
             }

@@ -20,7 +20,7 @@ namespace Videofy.Chain
         {
             while (Input.IsOpen | (Input.Count > 0))
             {
-                byte[] temp = Input.Take(256);
+                byte[] temp = Input.Take(250);
                 temp = ecc.Decode(temp, 100);
                 Output.Add(temp);
             }

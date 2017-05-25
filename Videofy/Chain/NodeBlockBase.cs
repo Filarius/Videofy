@@ -20,6 +20,7 @@ namespace Videofy.Chain
         //private float[,] dctarray;
         private int[] dctarray;
         private NodeToken token;
+        private int maxDC;
 
         public NodeBlockBase(OptionsStruct options, IPipe input, IPipe output, NodeToken token) : base(input, output)
         {
@@ -113,11 +114,11 @@ namespace Videofy.Chain
                 = value;
         }
         */
-        private void SnakeArraySet(int [] array, int z, int value)
+        private void SnakeArraySet(int[] array, int z, int value)
         {
             array
                 [
-                8*snakeIteratorCore[z, 0]
+                8 * snakeIteratorCore[z, 0]
                 +
                 snakeIteratorCore[z, 1]
                 ]
@@ -141,7 +142,7 @@ namespace Videofy.Chain
             return
               array
                 [
-                8*snakeIteratorCore[z, 0]
+                8 * snakeIteratorCore[z, 0]
                 +
                 snakeIteratorCore[z, 1]
                 ];
@@ -149,44 +150,91 @@ namespace Videofy.Chain
 
 
         private int DCTBoundsFind()
-        {           
+        {
             int lastB = 0;
-            int db = 256;
-            double min, max;
+            int db = 1024;
+            //double min, max;
+            int min = 0, max = 255;
+            int newmin = 255, newmax = 0;
+            int newmin2 = 255, newmax2 = 0;
             Boolean itsOkay;
+            byte[] data = new byte[64];
+            //get middle value of DC
+            byte[] bt = new byte[64];
+            for (int i = 0; i < 64; i++)
+                bt[i] = 128;
+            int[] result = new int[64];
+            DCT8x8(bt, ref result);
+            this.maxDC = result[0];
+
             while (db > 0)
             {
                 int nextB = lastB + db;
                 //float[,] core = new float[8, 8];
                 int[] core = new int[64];
                 //core[0, 0] = 1024;
-                core[0] = 1024;
+                core[0] = this.maxDC;
+                
                 for (int i = 1; i < options.cellCount; i++)
                 {
                     SnakeArraySet(core, i, nextB);
                 }
+                
+
+                /*
                 Mat DCT = new Mat(8, 8, MatType.CV_32F, core);
                 Mat mat = DCT.Idct();
                 mat.MinMaxIdx(out min, out max);
+
                 DCT.Dispose();
                 mat.Dispose();
-                itsOkay = (min >= 0) & (max < 256);
+                */
+                newmin = 255;
+                newmax = 0;
+                IDCT8x8(core, ref data);
+                for (int i = 0; i < 64; i++)
+                {
+                    if (newmax < data[i]) { newmax = data[i]; }
+                    if (newmin > data[i]) { newmin = data[i]; }
+                }
+
+
+
+                //itsOkay = (min >= 0) & (max < 256);
+                itsOkay = !((min == newmin) | (max == newmax));
+
                 if (itsOkay)
                 {
-                    core[0] = 1024;
+                    core[0] = this.maxDC;
+
+                    
                     for (int i = 1; i < options.cellCount; i++)
                     {
                         SnakeArraySet(core, i, -nextB);
                     }
+                    
+
+                    /*
                     DCT = new Mat(8, 8, MatType.CV_32F, core);
                     mat = DCT.Idct();
                     mat.MinMaxIdx(out min, out max);
-                    itsOkay = (min >= 0) & (max < 256);
+                    */
+                    newmin2 = 255;
+                    newmax2 = 0;
+                    IDCT8x8(core, ref data);
+                    for (int i = 0; i < 64; i++)
+                    {
+                        if (newmax2 < data[i]) { newmax2 = data[i]; }
+                        if (newmin2 > data[i]) { newmin2 = data[i]; }
+                    }
+                    itsOkay = !((min == newmin2) | (max == newmax2));
                 }
 
                 if (itsOkay)
                 {
                     lastB = nextB;
+                  //  min = (newmin < newmin2) ? newmin : newmin2;
+                   // max = (newmax > newmax2) ? newmax : newmax2;
                 }
                 else
                 {
@@ -324,7 +372,7 @@ namespace Videofy.Chain
         {
             int i;
             //dctarray[0, 0] = 1024;
-            dctarray[0] = 1024;
+            dctarray[0] = this.maxDC;
 
             for (i = 1; i < options.cellCount + 1; i++)
             {
@@ -340,6 +388,9 @@ namespace Videofy.Chain
 
             byte[] ar = new byte[64];
 
+            IDCT8x8(dctarray, ref ar);
+
+            Output.Add(ar);
             /*
             byte[] ar = new byte[64];
             DFFrameBlock blok = new DFFrameBlock(ar);
@@ -355,25 +406,28 @@ namespace Videofy.Chain
             Output.Add(blok.ToArray());
             blok.Free();
             */
-            
+
         }
 
         private void DCTTransformBitsFromBlock()
         {
             byte[] temp = Input.Take(64);
-            
+            /*
             DFFrameBlock blok = new DFFrameBlock(temp);
             Mat mat = new Mat();
             blok.Body.ConvertTo(mat, MatType.CV_32FC1);
             mat = mat.Dct();
             mat.CopyTo(block.Body);
+            */
+            DCT8x8(temp, ref dctarray);
             for (int i = 1; i < options.cellCount + 1; i++)
             {
                 Output.Add(BitsFromCell(SnakeArrayGet(dctarray, i)));
             }
+            /*
             mat.Dispose();
             blok.Free();
-            
+            */
             /*
             var data = new float[8, 8];
             int k = 0;
@@ -398,7 +452,7 @@ namespace Videofy.Chain
         protected void StartBitsToBlock()
         {
             //DEBUG
-            int cnt =1;
+            int cnt = 1;
             if (options.density == 1)
             {
                 int a = 89;
@@ -420,12 +474,12 @@ namespace Videofy.Chain
             else
             {
 
-                block = new DFFrameBlock(dctarray);
+               // block = new DFFrameBlock(dctarray);
                 while ((Input.Count > 0) | (Input.IsOpen)) // pipe have data or not closed
                 {
                     DCTTransformBitsToBlock();
                 }
-                block.Free();
+               // block.Free();
             }
             Output.Complete();
         }
@@ -449,7 +503,7 @@ namespace Videofy.Chain
             }
             else
             {
-                block = new DFFrameBlock(dctarray);
+               // block = new DFFrameBlock(dctarray);
                 while ((Input.Count > 0) | (Input.IsOpen)) // pipe have data or not closed
                 {
                     if (token.token)
@@ -458,7 +512,7 @@ namespace Videofy.Chain
                     }
                     DCTTransformBitsFromBlock();
                 }
-                block.Free();
+             //   block.Free();
             }
             Output.Complete();
             //Console.WriteLine(Debug.i.ToString());
@@ -543,18 +597,18 @@ namespace Videofy.Chain
             for (int y = 0; y < isize; y++)
             {
                 for (int x = 0; x < isize; x++)
-                    diff[x + y * isize] = pix1[x+d1] - pix2[x+d2];
+                    diff[x + y * isize] = pix1[x + d1] - pix2[x + d2];
                 d1 += ipix1;
                 d2 += ipix2;
             }
         }
 
-        private  byte ClipByte(int a)
+        private byte ClipByte(int a)
         {
-            return (a < 0) ? (byte)0 : ((a>255) ? (byte)255 : (byte)a);
+            return (a < 0) ? (byte)0 : ((a > 255) ? (byte)255 : (byte)a);
         }
 
-        private void DCT8x8(byte[] data,ref int[] result)
+        private void DCT8x8(byte[] data, ref int[] result)
         {
             int i;
             int[] tmp = new int[64];
@@ -637,20 +691,20 @@ namespace Videofy.Chain
                 b6 = a0 + a3 - ((a1 >> 1) + a1);
                 b7 = a1 - a2 + ((a3 >> 1) + a3);
 
-                
-                result[0*8 + i] = b0 + b1;
-                result[1*8 + i] = b4 + (b7 >> 2);
-                result[2*8 + i] = b2 + (b3 >> 1);
-                result[3*8 + i] = b5 + (b6 >> 2);
-                result[4*8 + i] = b0 - b1;
-                result[5*8 + i]= b6 - (b5 >> 2);
-                result[6*8 + i] = (b2 >> 1) - b3;
-                result[7*8 + i] = (b4 >> 2) - b7;
+
+                result[0 * 8 + i] = b0 + b1;
+                result[1 * 8 + i] = b4 + (b7 >> 2);
+                result[2 * 8 + i] = b2 + (b3 >> 1);
+                result[3 * 8 + i] = b5 + (b6 >> 2);
+                result[4 * 8 + i] = b0 - b1;
+                result[5 * 8 + i] = b6 - (b5 >> 2);
+                result[6 * 8 + i] = (b2 >> 1) - b3;
+                result[7 * 8 + i] = (b4 >> 2) - b7;
             }
 
         }
 
-        private void IDCT(int[] data, ref byte[] result)
+        private void IDCT8x8(int[] data, ref byte[] result)
         {
             int[] tmp = new int[64];
             int a0, a1, a2, a3;
@@ -659,15 +713,15 @@ namespace Videofy.Chain
             int i;
             // Horizontal  
             for (i = 0; i < 8; i++)
-            {                
+            {
                 p0 = data[i * 8 + 0];
-                p1 = data[i * 8 +1];
-                p2 = data[i * 8 +2];
-                p3 = data[i * 8 +3];
-                p4 = data[i * 8 +4];
-                p5 = data[i * 8 +5];
-                p6 = data[i * 8 +6];
-                p7 = data[i * 8 +7];
+                p1 = data[i * 8 + 1];
+                p2 = data[i * 8 + 2];
+                p3 = data[i * 8 + 3];
+                p4 = data[i * 8 + 4];
+                p5 = data[i * 8 + 5];
+                p6 = data[i * 8 + 6];
+                p7 = data[i * 8 + 7];
 
                 a0 = p0 + p4;
                 a1 = p0 - p4;
@@ -690,7 +744,7 @@ namespace Videofy.Chain
                 b5 = a2 - (a1 >> 2);
                 b7 = a3 - (a0 >> 2);
 
-                
+
 
                 tmp[i * 8 + 0] = b0 + b7;
                 tmp[i * 8 + 1] = b2 - b5;
@@ -703,15 +757,15 @@ namespace Videofy.Chain
             }
 
             for (i = 0; i < 8; i++)
-            {                
-                p0 = tmp[0*8 + i];
-                p1 = tmp[1*8 + i];
-                p2 = tmp[2*8 + i];
-                p3 = tmp[3*8 + i];
-                p4 = tmp[4*8 + i];
-                p5 = tmp[5*8 + i];
-                p6 = tmp[6*8 + i];
-                p7 = tmp[7*8 + i];
+            {
+                p0 = tmp[0 * 8 + i];
+                p1 = tmp[1 * 8 + i];
+                p2 = tmp[2 * 8 + i];
+                p3 = tmp[3 * 8 + i];
+                p4 = tmp[4 * 8 + i];
+                p5 = tmp[5 * 8 + i];
+                p6 = tmp[6 * 8 + i];
+                p7 = tmp[7 * 8 + i];
 
                 a0 = p0 + p4;
                 a1 = p0 - p4;
@@ -735,16 +789,16 @@ namespace Videofy.Chain
                 b5 = a2 - (a1 >> 2);
 
 
-                result[0*8 + i] = ClipByte(b0 + b7);
-                result[1*8 + i] = ClipByte(b2 - b5);
-                result[2*8 + i] = ClipByte(b4 + b3);
-                result[3*8 + i] = ClipByte(b6 + b1);
-                result[4*8 + i] = ClipByte(b6 - b1);
-                result[5*8 + i] = ClipByte(b4 - b3);
-                result[6*8 + i] = ClipByte(b2 + b5);
-                result[7*8 + i] = ClipByte(b0 - b7);
+                result[0 * 8 + i] = ClipByte((b0 + b7) >> 6);
+                result[1 * 8 + i] = ClipByte((b2 - b5) >> 6);
+                result[2 * 8 + i] = ClipByte((b4 + b3) >> 6);
+                result[3 * 8 + i] = ClipByte((b6 + b1) >> 6);
+                result[4 * 8 + i] = ClipByte((b6 - b1) >> 6);
+                result[5 * 8 + i] = ClipByte((b4 - b3) >> 6);
+                result[6 * 8 + i] = ClipByte((b2 + b5) >> 6);
+                result[7 * 8 + i] = ClipByte((b0 - b7) >> 6);
             }
         }
-        
+
     }
 }

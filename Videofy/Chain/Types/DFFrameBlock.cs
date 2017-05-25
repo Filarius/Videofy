@@ -50,7 +50,7 @@ namespace Videofy.Chain.Types
         {
             if (array.Length != 64) throw new ArgumentOutOfRangeException();
             blockint = array;
-            handle = GCHandle.Alloc(block, GCHandleType.Pinned);
+            handle = GCHandle.Alloc(blockint, GCHandleType.Pinned);
             ptr = handle.AddrOfPinnedObject();
             Body = new Mat(8, 8, MatType.CV_32SC1, ptr);
         }

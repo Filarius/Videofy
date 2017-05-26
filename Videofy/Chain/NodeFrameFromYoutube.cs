@@ -63,10 +63,10 @@ namespace Videofy.Chain
         {
             ffmpeg.StarByte();
             youtube.StarByte();
-            Boolean youtubeStillRun;
+            //Boolean youtubeStillRun;
             String s;
             //debug
-            int i = 0;
+            //int i = 0;
 
             byte[] temp;
             bool youtubeClosed = false;

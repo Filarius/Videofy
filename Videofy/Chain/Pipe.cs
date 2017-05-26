@@ -103,7 +103,7 @@ namespace Videofy.Chain
                             throw e;
                         }
                     }
-                    catch (OperationCanceledException e)
+                    catch (OperationCanceledException)
                     {                       
                         data.CompleteAdding();
                         while(data.Count>0)
@@ -150,7 +150,7 @@ namespace Videofy.Chain
             {
                 data.Add(value, token);
             }
-            catch (OperationCanceledException e)
+            catch (OperationCanceledException)
             {
                 data.CompleteAdding();
             }

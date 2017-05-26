@@ -13,7 +13,7 @@ namespace Videofy.Chain
         protected const int blockSize = 1024000;
 
         private IPipe _input, _output;
-        private int _chunkSize;
+       // private int _chunkSize;
        // private Task _task;
        // private NodeFunc _func;
 

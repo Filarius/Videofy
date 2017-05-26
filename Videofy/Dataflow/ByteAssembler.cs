@@ -149,7 +149,8 @@ namespace Videofy.Dataflow
 
         private int DCTBoundsFind()
         {
-            Mat main;// = Mat.Zeros(new Size(8,8),MatType.CV_32F);
+            //Mat main;
+            // = Mat.Zeros(new Size(8,8),MatType.CV_32F);
             //var mainInd = main.GetGenericIndexer<float>();
             int lastB = 0;
             int db = 256;

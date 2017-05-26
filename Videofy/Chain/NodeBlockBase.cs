@@ -15,7 +15,7 @@ namespace Videofy.Chain
         private OptionsStruct options;
         private int[] valueBounds;
         private int[,] snakeIteratorCore;
-        private DFFrameBlock block;
+        //private DFFrameBlock block;
         private byte[] blockarray;
         //private float[,] dctarray;
         private int[] dctarray;
@@ -452,21 +452,25 @@ namespace Videofy.Chain
         protected void StartBitsToBlock()
         {
             //DEBUG
+            /*
             int cnt = 1;
             if (options.density == 1)
             {
                 int a = 89;
             }
+            */
             //DEBUG
             if (options.cellCount == 1)
             {
                 while ((Input.Count > 0) | (Input.IsOpen)) // pipe have data or not closed
                 {
                     //DEBUG
+                    /*
                     if (cnt > 1878540)
                         if (cnt % 1 == 0)
                             //      Console.WriteLine(cnt);
                             cnt += 1;
+                            */
                     //DEBUG
                     PlainTransformBitsToBlock();
                 }
@@ -487,7 +491,7 @@ namespace Videofy.Chain
         protected void StartBitFromBlock()
         {
             //DEBUG
-            int i = 0;
+           /* int i = 0;*/
             //DEBUG
             if (options.cellCount == 1)
             {

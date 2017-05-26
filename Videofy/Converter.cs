@@ -21,7 +21,7 @@ namespace Videofy.Main
         private FrameManager _frameManager;
         private String _filePath;
         private FileStream _file;
-        private String _URL;
+        //private String _URL;
         private const int EncodedHeaderLength = 3624;
         private Boolean _encode;
         private Boolean _workDone;
@@ -213,12 +213,12 @@ namespace Videofy.Main
                 }
 
                 Byte[] buf = null;
-                Byte[] tmp = null;
+               // Byte[] tmp = null;
                 FileHeader fh = null;
                 FileStream file = null;
                 MemoryStream ms = new MemoryStream(Config.BlockSize * 2);
                 _frameManager = new FrameManager(1, Config.Block);
-                int j;
+                //int j;
 
                 int bytesRead = 0;
                 int bytesWrite = 0;

@@ -120,7 +120,7 @@ namespace Videofy.Chain
 
         public void DecodeUrl(string path, string url)
         {
-            Decode(path, "", url);
+            Decode("", path, url);
         }
 
         private void Decode(string path, string saveTo, string url)

@@ -18,7 +18,7 @@ namespace Videofy.Chain
         {
 
             //debug
-            int cnt = 0;
+           
             //debug
             while (true)
             {

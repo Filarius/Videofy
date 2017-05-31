@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+//using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenCvSharp;
@@ -22,6 +22,8 @@ namespace Videofy.Chain
         private NodeToken token;
         private int maxDC;
 
+        private List<byte[]> debug;
+
         public NodeBlockBase(OptionsStruct options, IPipe input, IPipe output, NodeToken token) : base(input, output)
         {
             this.options = options;
@@ -35,6 +37,8 @@ namespace Videofy.Chain
             dctarray = new int[64];
 
             MaxError = 0;
+
+            debug = new List<byte[]>();
         }
 
         private void SnakeIteratorInit()
@@ -420,9 +424,14 @@ namespace Videofy.Chain
             mat.CopyTo(block.Body);
             */
             DCT8x8(temp, ref dctarray);
+
+
+
             for (int i = 1; i < options.cellCount + 1; i++)
             {
-                Output.Add(BitsFromCell(SnakeArrayGet(dctarray, i)));
+                // Output.Add(BitsFromCell(SnakeArrayGet(dctarray, i)));
+                // debug.Add(BitsFromCell(SnakeArrayGet(dctarray, i)));
+                BufferWrite((BitsFromCell(SnakeArrayGet(dctarray, i))));
             }
             /*
             mat.Dispose();
@@ -484,7 +493,7 @@ namespace Videofy.Chain
                     DCTTransformBitsToBlock();
                 }
                // block.Free();
-            }
+            }            
             Output.Complete();
         }
 
@@ -515,9 +524,40 @@ namespace Videofy.Chain
                         break;
                     }
                     DCTTransformBitsFromBlock();
+                    //if(debug.Count>100)
+                    /*
+                    if (BufferLength > 10240)
+                    {
+                        byte[] temp = new byte[options.density * debug.Count];
+                        for(int i=0;i<debug.Count;i++)
+                        {
+                            //   Array.Copy(debug[i], 0, temp, i * options.density, options.density);
+                            BufferWrite(debug[i]);
+                        }
+                        BufferFlush();
+                        /*
+                        Output.Add(temp);
+                        debug.Clear();
+                        */
+                        /*
+                        while (debug.Count > 0)
+                        {
+                            Output.Add(debug[0]);
+                            debug.RemoveAt(0);
+                        }
+                        */
+                  //  }
                 }
              //   block.Free();
             }
+            /*
+            while (debug.Count > 0)
+            {
+                Output.Add(debug[0]);
+                debug.RemoveAt(0);
+            }
+            */
+            BufferFlush();
             Output.Complete();
             //Console.WriteLine(Debug.i.ToString());
         }

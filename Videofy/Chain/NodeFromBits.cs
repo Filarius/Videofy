@@ -24,6 +24,7 @@ namespace Videofy.Chain
                 {
                     break;
                 }
+                
                 byte[] temp = Input.Take(8);
                 if (temp == null)
                     break;               

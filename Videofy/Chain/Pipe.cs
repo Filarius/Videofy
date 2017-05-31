@@ -8,8 +8,9 @@ using System.Threading;
 
 namespace Videofy.Chain
 {
-    class Pipe:IPipe
+    class Pipe : IPipe
     {
+        private const int maxCount = 5;
         private BlockingCollection<byte[]> data;
         private Queue<byte> queue;
         //private byte[] buff = null;
@@ -26,13 +27,18 @@ namespace Videofy.Chain
         public Pipe(CancellationToken token)
         {
             this.token = token;
-            data = new BlockingCollection<byte[]>(new ConcurrentQueue<byte[]>(), 5);
+            data = new BlockingCollection<byte[]>(new ConcurrentQueue<byte[]>(), maxCount);
             queue = new Queue<byte>(102400);
             //pos = 0;
             //buff = new byte[0];                        
         }
 
-        public int Count { get { return queue.Count + data.Count; } private set { } }
+        public Boolean QueryIsFull { get { return data.Count == maxCount; } private set { } }
+
+        public Boolean QueryIsEmpty { get { return data.Count == 0; } private set { } }
+
+        public int BufferLength { get { return queue.Count; } private set { } }
+        public int Count { get { return data.Count + queue.Count; } private set { } }
 
         public void Complete()
         {
@@ -40,9 +46,10 @@ namespace Videofy.Chain
         }
 
         public Boolean IsOpen
-        { get
+        {
+            get
             {
-                return 
+                return
                     !data.IsCompleted;
             }
         }
@@ -65,7 +72,7 @@ namespace Videofy.Chain
                 }
                 catch (InvalidOperationException e)
                 {
-                    if (!((token.IsCancellationRequested)|(data.IsCompleted)))
+                    if (!((token.IsCancellationRequested) | (data.IsCompleted)))
                     {
                         throw e;
                     }
@@ -77,7 +84,7 @@ namespace Videofy.Chain
         // take only data of expected size
         public byte[] Take(int size)
         {
-            byte[] temp = null; 
+            byte[] temp = null;
 
             while (queue.Count < size)
             {
@@ -88,12 +95,22 @@ namespace Videofy.Chain
                     for (int i = cnt; i < size; i++)
                     {
                         queue.Enqueue(0);
-                    }                   
+                    }
                 }
                 else
                 {
                     try
                     {
+                        //while (QueryIsEmpty & (!token.IsCancellationRequested))
+                        // Boolean q = ();
+
+                        /*
+                        while (data.Count == 0)
+                        {
+                            System.Threading.Thread.Sleep(1);
+                        }
+                        */
+
                         temp = data.Take(token);
                     }
                     catch (InvalidOperationException e)
@@ -104,9 +121,9 @@ namespace Videofy.Chain
                         }
                     }
                     catch (OperationCanceledException)
-                    {                       
+                    {
                         data.CompleteAdding();
-                        while(data.Count>0)
+                        while (data.Count > 0)
                         {
                             data.Take();
                         }
@@ -114,30 +131,30 @@ namespace Videofy.Chain
                     }
                 }
 
-                if(temp!=null)
-                {                    
-                    for(int i = 0; i < temp.Length; i++)
+                if (temp != null)
+                {
+                    for (int i = 0; i < temp.Length; i++)
                     {
                         queue.Enqueue(temp[i]);
-                    }                    
+                    }
                 }
             }
 
-            if (queue.Count>= size)
+            if (queue.Count >= size)
             {
                 temp = new byte[size];
-                for(int i=0;i<size;i++)
+                for (int i = 0; i < size; i++)
                 {
-                    temp[i] = queue.Dequeue();  
+                    temp[i] = queue.Dequeue();
                 }
-                
+
                 return temp;
             }
             else
             {
                 throw new Exception("THIS LINE MUST NOT BE EXECUTED");
             }
-            
+
         }
 
 
@@ -154,7 +171,7 @@ namespace Videofy.Chain
             {
                 data.CompleteAdding();
             }
-            
+
         }
     }
 }

@@ -41,7 +41,8 @@ namespace Videofy.Main
         }
 
         public static EncodingPreset FromName(this EncodingPreset preset, string s)
-        {
+        { 
+            
             switch (s)
             {
                 case "ultrafast": return EncodingPreset.ultrafast;
@@ -55,7 +56,25 @@ namespace Videofy.Main
                 case "veryslow": return EncodingPreset.veryslow;
                 case "placebo": return EncodingPreset.placebo;
             }
+            
             throw new System.ArgumentOutOfRangeException();
+            /*
+            switch (s)
+            {
+                case "ultrafast": preset = EncodingPreset.ultrafast; break
+                case "superfast": preset = EncodingPreset.superfast; break;
+                case "veryfast": preset = EncodingPreset.veryfast; break;
+                case "faster": preset = EncodingPreset.faster; break;
+                case "fast": preset = EncodingPreset.fast; break;
+                case "medium": preset = EncodingPreset.medium; break;
+                case "slow": preset = EncodingPreset.slow; break;
+                case "slower": preset = EncodingPreset.slower; break;
+                case "veryslow": preset = EncodingPreset.veryslow; break;
+                case "placebo": preset = EncodingPreset.placebo; break;
+                default:
+                    throw new System.ArgumentOutOfRangeException();
+            }
+            */
         }
     }
 

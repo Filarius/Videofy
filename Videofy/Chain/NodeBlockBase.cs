@@ -20,7 +20,7 @@ namespace Videofy.Chain
         //private float[,] dctarray;
         private int[] dctarray;
         private NodeToken token;
-        private int maxDC;
+        protected int maxDC;
 
         private List<byte[]> debug;
 
@@ -118,7 +118,7 @@ namespace Videofy.Chain
                 = value;
         }
         */
-        private void SnakeArraySet(int[] array, int z, int value)
+        protected void SnakeArraySet(int[] array, int z, int value)
         {
             array
                 [
@@ -141,7 +141,7 @@ namespace Videofy.Chain
         }
         */
 
-        private int SnakeArrayGet(int[] array, int z)
+        protected int SnakeArrayGet(int[] array, int z)
         {
             return
               array
@@ -284,7 +284,7 @@ namespace Videofy.Chain
         }
         */
 
-        private int BitsToCell(byte[] bits)
+        protected int BitsToCell(byte[] bits)
         {
             if (bits.Length != options.density) throw new ArgumentOutOfRangeException();
             float tmp = 0;
@@ -299,10 +299,8 @@ namespace Videofy.Chain
             return (int)Math.Round(tmp);
         }
 
-
-
         //private byte[] BitsFromCell(float value)
-        private byte[] BitsFromCell(int value)
+        protected byte[] BitsFromCell(int value)
         {
             //normalize
             float tmp;
@@ -331,7 +329,7 @@ namespace Videofy.Chain
 
         private float MaxError { get; set; }
         //handle information about value shift
-        private void ErrorShiftProcessor(float errorShift)
+        protected void ErrorShiftProcessor(float errorShift)
         {
             float tmp = Math.Abs(errorShift);
             if (tmp > 1) throw new ArgumentOutOfRangeException();
@@ -341,10 +339,8 @@ namespace Videofy.Chain
             }
         }
 
-
         private void PlainTransformBitsToBlock()
         {
-
             byte[] bits = Input.Take(options.density);
             //byte cell = (byte)Math.Round(BitsToCell(bits), MidpointRounding.AwayFromZero);
             byte cell = (byte)(BitsToCell(bits));
@@ -431,7 +427,7 @@ namespace Videofy.Chain
             {
                 // Output.Add(BitsFromCell(SnakeArrayGet(dctarray, i)));
                 // debug.Add(BitsFromCell(SnakeArrayGet(dctarray, i)));
-                BufferWrite((BitsFromCell(SnakeArrayGet(dctarray, i))));
+                Output.Add((BitsFromCell(SnakeArrayGet(dctarray, i))));
             }
             /*
             mat.Dispose();
@@ -652,7 +648,7 @@ namespace Videofy.Chain
             return (a < 0) ? (byte)0 : ((a > 255) ? (byte)255 : (byte)a);
         }
 
-        private void DCT8x8(byte[] data, ref int[] result)
+        protected void DCT8x8(byte[] data, ref int[] result)
         {
             int i;
             int[] tmp = new int[64];
@@ -748,7 +744,7 @@ namespace Videofy.Chain
 
         }
 
-        private void IDCT8x8(int[] data, ref byte[] result)
+        protected void IDCT8x8(int[] data, ref byte[] result)
         {
             int[] tmp = new int[64];
             int a0, a1, a2, a3;
@@ -841,6 +837,69 @@ namespace Videofy.Chain
                 result[5 * 8 + i] = ClipByte((b4 - b3) >> 6);
                 result[6 * 8 + i] = ClipByte((b2 + b5) >> 6);
                 result[7 * 8 + i] = ClipByte((b0 - b7) >> 6);
+            }
+        }
+
+        protected void DCT4x4(byte[] data, ref int[] result)
+        {
+            int[] tmp = new int[16];
+
+            for (int i = 0; i < 4; i++)
+            {
+                int s03 = d[i * 4 + 0] + d[i * 4 + 3];
+                int s12 = d[i * 4 + 1] + d[i * 4 + 2];
+                int d03 = d[i * 4 + 0] - d[i * 4 + 3];
+                int d12 = d[i * 4 + 1] - d[i * 4 + 2];
+
+                tmp[0 * 4 + i] = s03 + s12;
+                tmp[1 * 4 + i] = 2 * d03 + d12;
+                tmp[2 * 4 + i] = s03 - s12;
+                tmp[3 * 4 + i] = d03 - 2 * d12;
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                int s03 = tmp[i * 4 + 0] + tmp[i * 4 + 3];
+                int s12 = tmp[i * 4 + 1] + tmp[i * 4 + 2];
+                int d03 = tmp[i * 4 + 0] - tmp[i * 4 + 3];
+                int d12 = tmp[i * 4 + 1] - tmp[i * 4 + 2];
+
+                result[i * 4 + 0] = s03 + s12;
+                result[i * 4 + 1] = 2 * d03 + d12;
+                result[i * 4 + 2] = s03 - s12;
+                result[i * 4 + 3] = d03 - 2 * d12;
+            }
+        }
+
+        protected void IDCT4x4(int[] data,ref byte[] result)
+        {
+            int[] tmp = new int[16];
+            int[] d = new int[16];
+
+            for (int i = 0; i < 4; i++)
+            {
+                int s02 = data[0 * 4 + i] + data[2 * 4 + i];
+                int d02 = data[0 * 4 + i] - data[2 * 4 + i];
+                int s13 = data[1 * 4 + i] + (data[3 * 4 + i] >> 1);
+                int d13 = (data[1 * 4 + i] >> 1) - data[3 * 4 + i];
+
+                tmp[i * 4 + 0] = s02 + s13;
+                tmp[i * 4 + 1] = d02 + d13;
+                tmp[i * 4 + 2] = d02 - d13;
+                tmp[i * 4 + 3] = s02 - s13;
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                int s02 = tmp[0 * 4 + i] + tmp[2 * 4 + i];
+                int d02 = tmp[0 * 4 + i] - tmp[2 * 4 + i];
+                int s13 = tmp[1 * 4 + i] + (tmp[3 * 4 + i] >> 1);
+                int d13 = (tmp[1 * 4 + i] >> 1) - tmp[3 * 4 + i];
+
+                result[0 * 4 + i] = ClipByte((s02 + s13 + 32) >> 6);
+                result[1 * 4 + i] = ClipByte((d02 + d13 + 32) >> 6);
+                result[2 * 4 + i] = ClipByte((d02 - d13 + 32) >> 6);
+                result[3 * 4 + i] = ClipByte((s02 - s13 + 32) >> 6);
             }
         }
 

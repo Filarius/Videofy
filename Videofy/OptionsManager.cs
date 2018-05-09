@@ -135,7 +135,8 @@ namespace Videofy.Main
             }
             set
             {
-                props.encodingPreset.FromName(value);
+
+                props.encodingPreset = Main.EncodingPreset.placebo.FromName(value);
                 Save();
             }
         }

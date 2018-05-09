@@ -136,6 +136,7 @@
     <Compile Include="Chain\ChainManager.cs" />
     <Compile Include="Chain\ChainNodeFunc.cs" />
     <Compile Include="Chain\ChainNode.cs" />
+    <Compile Include="Chain\NodeBitsToFrameYUV.cs" />
     <Compile Include="Chain\Debug.cs" />
     <Compile Include="Chain\Helpers\DataHeader.cs" />
     <Compile Include="Chain\Helpers\MP4Info.cs" />
@@ -165,6 +166,8 @@
     <Compile Include="Chain\NodeWriter.cs" />
     <Compile Include="Chain\Pipe.cs" />
     <Compile Include="Chain\PipeJoiner.cs" />
+    <Compile Include="Chain\Types\DFFrameYUV.cs" />
+    <Compile Include="Chain\Types\DFFrameSubYUV.cs" />
     <Compile Include="Chain\Types\DFYoutube.cs" />
     <Compile Include="Checks.cs" />
     <Compile Include="Converter.cs" />
